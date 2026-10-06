@@ -54,13 +54,13 @@ extern map_t map; //guarda todo el mapa
 
 //decoration.c
 
-int decspr_new(char* data[],palette_t pal);
-//se crea un decorado nuevo que debe tener 16 columnas por 16 filas obligatoriamente
-//la funcion devuelve el codigo o -1 si no se ha creado
+int decspr_new(sprite_t* spr,palette_t pal);
+//se crea un decorado a partir de cuatro sprites y una paleta (se han de liberar los sprites)
+//los sprites empiezan con los dos de la fila superior y despues los de la inferior
 
-void decsprs_del();
-//libera todos los sprites de decorados guardados
+int decsprs_del();
+//se libera el espacio de los sprites del decorado (no de los sprites individuales);
 
 void decspr_drw(uchar code,uchar psx,uchar psy);
-//se dibuja el decorado de codigo dado en la posicion de sprites dada
+//se dibuja el decorado de codigo dado en la posicion de decorado
 
