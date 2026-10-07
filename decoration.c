@@ -15,10 +15,14 @@ int decspr_new(sprite_t* s,palette_t p) {
     return -1;
 }
 
+void decsprs_del() {
+    free(decsprs);
+}
+
 void decspr_drw(uchar c,uchar x,uchar y) {
     if(c<decsprs_siz) {
         int ix=x*SPRDIM*2;
-        int iy=y*SPRDIM*2;
+        int iy=y*SPRDIM*2+SPRDIM;
         decspr_t d=decsprs[c];
         for(int j=0;j<2;j++) {
             for(int i=0;i<2;i++) {

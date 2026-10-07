@@ -7,13 +7,18 @@
 #define PIXDIM 4 //dimension del pixel
 #define SPRDIM (8*PIXDIM) //dimension del sprite
 
-#define SCRW (SPRDIM*15) //dimension de la pantalla
-#define SCRH (SPRDIM*17)
+#define RDW 8 //dimension de los decorados
+              //
+#define RDH 8
+
+#define SCRW (SPRDIM*RDW) //dimension de la pantalla
+#define SCRH (SPRDIM*(RDH+2))
 
 #define DECS 15 //numero de sprites de decorado maximo en una pantalla
 
 #define MAPW 5 //dimension del mapa
 #define MAPH 5
+
 
 // Tipos
 
@@ -29,8 +34,8 @@ typedef struct {
 typedef decspr_t* decsprs_t; //matriz de dimension variable que contiene todos los sprites del decorado
 
 typedef struct {
-    uchar x : 4; //posicion (en sprites)
-    uchar y : 4;
+    uchar x : 3; //posicion (en sprites)
+    uchar y : 3;
     uchar cod; //codigo del decorado
 } deco_t;
 
@@ -58,9 +63,18 @@ int decspr_new(sprite_t* spr,palette_t pal);
 //se crea un decorado a partir de cuatro sprites y una paleta (se han de liberar los sprites)
 //los sprites empiezan con los dos de la fila superior y despues los de la inferior
 
-int decsprs_del();
+void decsprs_del();
 //se libera el espacio de los sprites del decorado (no de los sprites individuales);
 
 void decspr_drw(uchar code,uchar psx,uchar psy);
 //se dibuja el decorado de codigo dado en la posicion de decorado
+
+//map.c
+
+int room_new(uchar c,uchar r,int data[RDW][RDH],uchar enes);
+//creacion de una habitacion nueva data es un array de 8x8 donde se ponen
+//los codigos de los decorados (de 0 a 255), c y r es la posicion que ocupan
+//en el mapa la habitacion
+
+
 

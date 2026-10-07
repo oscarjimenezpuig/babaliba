@@ -7,6 +7,7 @@ static void ini() {
 }
 
 static void end() {
+    //decsprs_del();  
     scr_end();
 }
 
@@ -29,7 +30,10 @@ static void alfombra() {
     int cal=decspr_new(al,p);
     if(cal==-1) puts("ERROR");
     else {
-        decspr_drw(cal,1,1);
+        decspr_drw(cal,7,7);
+        decspr_drw(cal,0,0);
+        decspr_drw(cal,7,0);
+        decspr_drw(cal,0,7);
         scr_fls();
     }
     for(int k=0;k<4;k++) spr_del(al+k);
