@@ -10,7 +10,6 @@
 #define SPRDIM (8*PIXDIM) //dimension del sprite
 
 #define RDW 8 //dimension de los decorados
-              //
 #define RDH 8
 
 #define SCRW (SPRDIM*RDW) //dimension de la pantalla
@@ -24,6 +23,13 @@
 
 #define NULLPP ((MAPW>MAPH)?(MAPW):(MAPH)) //posicion de pantalla nula
 
+#define LIVESINI 3 //vidas iniciales
+
+#define PPXI 0 //posicion de pantalla inicial del player
+#define PPYI 0 
+
+#define PXI 0 //posicion dentro de la pantalla inicial
+#define PYI SPRDIM
 
 // Tipos
 
@@ -39,7 +45,7 @@ typedef struct {
 typedef decspr_t* decsprs_t; //matriz de dimension variable que contiene todos los sprites del decorado
 
 typedef struct {
-    uchar x : 3; //posicion (en sprites)
+    uchar x : 3; //posicion (en sprites de decorado)
     uchar y : 3;
     uchar cod; //codigo del decorado
 } deco_t;
@@ -82,6 +88,11 @@ extern decsprs_t decsprs; //guarda todos los sprites del decorado
 
 extern map_t map; //guarda todo el mapa
 
+extern object_t player; //guarda el jugador
+extern int score,lives; //puntuacion y vidas
+                        
+extern uchar quit; //bandera de finalizar
+
 // Funciones
 
 //decoration.c
@@ -110,12 +121,15 @@ void obj_unplc(object_t* obj);
 int obj_con(object_t* object,object_t* container);
 //se pone en el contenedor el objeto
 
+object_t* obj_mov(object_t* object,int x,int y);
+//movemos un objeto de una posicion a otra (devuelve el objeto de colision)
+
 void obj_drw(object_t obj);
 //dibuja el objeto
 
 //map.c
 
-int room_dec(uchar px,uchar py,uchar decs,...);
+void room_dec(uchar px,uchar py,uchar decs,...);
 //introduce los decorados de la habitacion
 
 int room_obj(uchar px,uchar py,int x,int y,object_t* obj);
@@ -128,10 +142,22 @@ object_t* room_obj_col(uchar px,uchar py,object_t obj);
 //dice si un objecto colisionara con otros objetos de la habitacion
 //devuelve el objeto colisionado
 
-void room_dec_drw();
+void room_dec_drw(uchar px,uchar py);
 //dibujo del decorado
 
-void room_obj_drw();
+void room_obj_drw(uchar px,uchar py);
 //dibujo de los objetos
 
+//player.c
 
+void ply_ini();
+//iniciamos el jugador
+
+void ply_end();
+//liberamos espacio del jugador
+
+int ply_act();
+//actuacion del jugador
+
+void ply_drw();
+//dibuja el jugador

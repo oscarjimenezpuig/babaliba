@@ -34,6 +34,23 @@ int obj_con(object_t* o,object_t* c) {
     return 0;
 }
 
+object_t* obj_mov(object_t* o,int x,int y) {
+    object_t* oc=NULL;
+    if(x>=0 && x<SCRW-SPRDIM && y>=SPRDIM && y<SCRH-2*SPRDIM) {
+        uchar px=o->px;
+        uchar py=o->py;    
+        if(room_can_plc(px,py,*o,x,y)) {
+            oc=room_obj_col(px,py,*o);
+            if(!oc) {
+                spr_era(o->spr,o->x,o->y,PIXDIM);
+                o->x=x;
+                o->y=y;
+            }
+        }
+    }
+    return oc;
+}
+
 void obj_drw(object_t o) {
    if(o.act) spr_drw(o.spr,o.pal,o.x,o.y,PIXDIM);
 }

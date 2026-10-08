@@ -4,11 +4,13 @@
 
 static void ini() {
     scr_ini(SCRW,SCRH);
+    ply_ini();
 }
 
 static void end() {
     //decsprs_del();  
     scr_end();
+    ply_end();
 }
 
 static void alfombra() {
@@ -41,8 +43,14 @@ static void alfombra() {
 
 int main() {
     ini();
-    alfombra();
-    getchar();
+    room_dec_drw(player.px,player.py);
+    ply_drw();
+    while(!quit) {
+        ply_act();
+        ply_drw();
+        scr_fls();
+        pause(0.01);
+    }
     end();
     return 0;
 }

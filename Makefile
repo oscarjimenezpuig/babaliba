@@ -2,8 +2,8 @@
 # PROYECTO
 # ============================================================
 
-TARGET = castle
-SRCS   = sprite.c graficos.c mapa.c movil.c jugador.c castle.c
+TARGET = babaliba
+SRCS   = sprite.c decoration.c object.c map.c player.c babaliba.c
 
 # Archivo que almacena el tipo de compilación
 # N = normal
