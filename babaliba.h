@@ -1,5 +1,7 @@
 // Includes
 
+#include <stdarg.h>
+
 #include "sprite.h"
 
 // Constantes
@@ -14,10 +16,13 @@
 #define SCRW (SPRDIM*RDW) //dimension de la pantalla
 #define SCRH (SPRDIM*(RDH+2))
 
-#define DECS 15 //numero de sprites de decorado maximo en una pantalla
+#define DECS 63 //numero de sprites de decorado maximo en una pantalla
+#define OBJS 7 //numero maximo de enemigos por pantalla
 
 #define MAPW 5 //dimension del mapa
 #define MAPH 5
+
+#define NULLPP ((MAPW>MAPH)?(MAPW):(MAPH)) //posicion de pantalla nula
 
 
 // Tipos
@@ -39,12 +44,34 @@ typedef struct {
     uchar cod; //codigo del decorado
 } deco_t;
 
+struct object_s; //predeclaracion de object_s
+
+typedef void (*ia_t)(struct object_s*);
+
+struct object_s {
+    uchar id;
+    sprite_t spr;
+    palette_t pal;
+    int x,y;
+    struct object_s* con;
+    ia_t ia;
+    struct {
+        uchar act : 1;
+        uchar px : 3;
+        uchar py : 3;
+    };
+
+};
+
+typedef struct object_s object_t;
+
 typedef struct {
     struct {
-        uchar decs : 4; //decorados
-        uchar enes : 2; //enemigos
+        uchar decs : 5; //decorados
+        uchar objs : 3; //enemigos
     };
     deco_t dec[DECS];
+    object_t* obj[OBJS];
 } room_t;
 
 typedef room_t map_t[MAPW][MAPH];
@@ -69,12 +96,42 @@ void decsprs_del();
 void decspr_drw(uchar code,uchar psx,uchar psy);
 //se dibuja el decorado de codigo dado en la posicion de decorado
 
+//object.c
+
+object_t obj_new(uchar id,sprite_t spr,palette_t pal);
+//creacion de un objeto (sin lugar)
+
+void obj_plc(object_t* obj,uchar px,uchar py,int x,int y);
+//se emplaza un objeto (y pasa a ser activo)
+
+void obj_unplc(object_t* obj);
+//se le quita la posicion al objeto (y pasa a ser inactivo)
+
+int obj_con(object_t* object,object_t* container);
+//se pone en el contenedor el objeto
+
+void obj_drw(object_t obj);
+//dibuja el objeto
+
 //map.c
 
-int room_new(uchar c,uchar r,int data[RDW][RDH],uchar enes);
-//creacion de una habitacion nueva data es un array de 8x8 donde se ponen
-//los codigos de los decorados (de 0 a 255), c y r es la posicion que ocupan
-//en el mapa la habitacion
+int room_dec(uchar px,uchar py,uchar decs,...);
+//introduce los decorados de la habitacion
 
+int room_obj(uchar px,uchar py,int x,int y,object_t* obj);
+//introduce un objeto en la habitacion (en un lugar libre)
+
+int room_can_plc(uchar px,uchar py,object_t obj,int x,int y);
+//dice si un objeto colisiona con el decorado
+
+object_t* room_obj_col(uchar px,uchar py,object_t obj);
+//dice si un objecto colisionara con otros objetos de la habitacion
+//devuelve el objeto colisionado
+
+void room_dec_drw();
+//dibujo del decorado
+
+void room_obj_drw();
+//dibujo de los objetos
 
 
