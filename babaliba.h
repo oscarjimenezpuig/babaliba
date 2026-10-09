@@ -12,14 +12,14 @@
 #define RDW 8 //dimension de los decorados
 #define RDH 8
 
-#define SCRW (SPRDIM*RDW) //dimension de la pantalla
-#define SCRH (SPRDIM*(RDH+2))
+#define SCRW (SPRDIM*RDW*2) //dimension de la pantalla
+#define SCRH (SPRDIM*(RDH*2+2))
 
 #define DECS 63 //numero de sprites de decorado maximo en una pantalla
 #define OBJS 7 //numero maximo de enemigos por pantalla
 
-#define MAPW 5 //dimension del mapa
-#define MAPH 5
+#define MAPW 2 //dimension del mapa
+#define MAPH 2
 
 #define NULLPP ((MAPW>MAPH)?(MAPW):(MAPH)) //posicion de pantalla nula
 
@@ -28,12 +28,19 @@
 #define PPXI 0 //posicion de pantalla inicial del player
 #define PPYI 0 
 
-#define PXI 0 //posicion dentro de la pantalla inicial
-#define PYI SPRDIM
+#define PXI SPRDIM*2 //posicion dentro de la pantalla inicial
+#define PYI SPRDIM*3
+
+#define POPSIZ 3 //numero maximo de objetos que puede tener un jugador
+
+#define IDPLA 0 //identidad jugador
+#define IDENE 1000 //primera de las identidades de los enemigos
+#define IDITM 2000 //primera de las identidades de un objeto
 
 // Tipos
 
 typedef unsigned char uchar;
+typedef unsigned short ushort;
 
 //un decorado es un sprite 2x2
 
@@ -52,19 +59,17 @@ typedef struct {
 
 struct object_s; //predeclaracion de object_s
 
-typedef void (*ia_t)(struct object_s*);
-
 struct object_s {
-    uchar id;
+    ushort id;
     sprite_t spr;
     palette_t pal;
     int x,y;
     struct object_s* con;
-    ia_t ia;
     struct {
         uchar act : 1;
         uchar px : 3;
         uchar py : 3;
+        uchar ene : 1;
     };
 
 };
@@ -109,7 +114,7 @@ void decspr_drw(uchar code,uchar psx,uchar psy);
 
 //object.c
 
-object_t obj_new(uchar id,sprite_t spr,palette_t pal);
+object_t obj_new(ushort id,sprite_t spr,palette_t pal);
 //creacion de un objeto (sin lugar)
 
 void obj_plc(object_t* obj,uchar px,uchar py,int x,int y);
@@ -131,6 +136,10 @@ void obj_drw(object_t obj);
 
 void room_dec(uchar px,uchar py,uchar decs,...);
 //introduce los decorados de la habitacion
+
+void room_dec_grd(uchar px,uchar py,uchar* deco,char* data[]);
+//se crea la habitacion a partir de una parrilla como los sprites,
+//solo acepta 10 decorados (de 0 a 9) contenidos en el array deco
 
 int room_obj(uchar px,uchar py,int x,int y,object_t* obj);
 //introduce un objeto en la habitacion (en un lugar libre)

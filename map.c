@@ -24,6 +24,22 @@ void room_dec(uchar px,uchar py,uchar ds,...) {
     va_end(l);
 }
 
+void room_dec_grd(uchar px,uchar py,uchar* d,char* data[]) {
+    map_ini();
+    room_t* r=&(map[px][py]);
+    for(uchar k=0;k<8;k++) {
+        char* p=data[k];
+        while(*p!='\0') {
+            if(*p!=' ') {
+                uchar cc=*p-'0';
+                deco_t dn={p-data[k],k,d[cc]};
+                r->dec[r->decs++]=dn;
+            }
+            p++;
+        }
+    }
+}
+
 int room_obj(uchar px,uchar py,int x,int y,object_t* obj) {
     if(room_can_plc(px,py,*obj,x,y)) {
         obj_unplc(obj);
@@ -41,7 +57,7 @@ int room_can_plc(uchar px,uchar py,object_t o,int x,int y) {
             for(uchar j=0;j<2;j++) {
                 decspr_t ds=decsprs[d.cod];
                 sprite_t s=ds.spr[i][j];
-                if(spr_col(s,d.x+PIXDIM*8*i,d.y+PIXDIM*8*j,PIXDIM,o.spr,x,y,PIXDIM)) {
+                if(spr_col(s,d.x*2*SPRDIM+SPRDIM*i,d.y*2*SPRDIM+SPRDIM+SPRDIM*j,PIXDIM,o.spr,x,y,PIXDIM)) {
                     return 0;
                 }
             }

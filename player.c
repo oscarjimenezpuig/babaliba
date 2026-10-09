@@ -26,7 +26,7 @@ static void ply_spr() {
 void ply_ini() {
     palette_t ppl={WHITE,WHITE,WHITE,WHITE};
     ply_spr();
-    player=obj_new(0,sprply[0],ppl);
+    player=obj_new(IDPLA,sprply[0],ppl);
     obj_plc(&player,PPXI,PPYI,PXI,PYI);
 }
 
@@ -45,7 +45,7 @@ static int ply_chg_scr(int vx,int vy) {
         x=SCRW-SPRDIM;
         px--;
         ret=1;
-    } else if(x>=SCRW-SPRDIM && vx==1 && px<MAPW) {
+    } else if(x>=SCRW-SPRDIM && vx==1 && px<MAPW-1) {
         x=0;
         px++;
         ret=1;
@@ -54,7 +54,7 @@ static int ply_chg_scr(int vx,int vy) {
         y=SCRH-2*SPRDIM;
         py--;
         ret=1;
-    } else if(y>=SCRH-2*SPRDIM && vy==1 && py<MAPH) {
+    } else if(y>=SCRH-2*SPRDIM && vy==1 && py<MAPH-1) {
         y=SPRDIM;
         py++;
         ret=1;

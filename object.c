@@ -1,6 +1,6 @@
 #include "babaliba.h"
 
-object_t obj_new(uchar i,sprite_t s,palette_t p) {
+object_t obj_new(ushort i,sprite_t s,palette_t p) {
     object_t o;
     o.id=i;
     o.spr=s;
@@ -9,6 +9,7 @@ object_t obj_new(uchar i,sprite_t s,palette_t p) {
     o.px=o.py=NULLPP;
     o.con=NULL;
     o.act=0;
+    o.ene=0;
     return o;
 }
 
@@ -36,7 +37,7 @@ int obj_con(object_t* o,object_t* c) {
 
 object_t* obj_mov(object_t* o,int x,int y) {
     object_t* oc=NULL;
-    if(x>=0 && x<SCRW-SPRDIM && y>=SPRDIM && y<SCRH-2*SPRDIM) {
+    if(x>=0 && x<=SCRW-SPRDIM && y>=SPRDIM && y<=SCRH-2*SPRDIM) {
         uchar px=o->px;
         uchar py=o->py;    
         if(room_can_plc(px,py,*o,x,y)) {
