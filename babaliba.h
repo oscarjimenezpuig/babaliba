@@ -36,6 +36,7 @@
 #define IDPLA 0 //identidad jugador
 #define IDENE 1000 //primera de las identidades de los enemigos
 #define IDITM 2000 //primera de las identidades de un objeto
+#define ITPLY 4 //numero de items maximo que puede tener un jugador
 
 // Tipos
 
@@ -59,30 +60,43 @@ typedef struct {
 
 struct object_s; //predeclaracion de object_s
 
-struct object_s {
-    ushort id;
+typedef struct {
+    ushort typ; //tipo
     sprite_t spr;
     palette_t pal;
     int x,y;
-    struct object_s* con;
     struct {
         uchar act : 1;
         uchar px : 3;
-        uchar py : 3;
-        uchar ene : 1;
+        uchar py :3 ;
     };
+} object_t;
 
-};
+typedef struct {
+    object_t obj;
+} item_t;
 
-typedef struct object_s object_t;
+typedef struct {
+    object_t obj;
+    item_t* its[ITPL];
+}player_t;
+
+typedef struct {
+    object_t obj;
+    uchar rnd : 1;
+    uchar prs : 1;
+    int ox, oy;
+    int dx, dy;
+}enemy_t;
 
 typedef struct {
     struct {
         uchar decs : 5; //decorados
         uchar objs : 3; //enemigos
     };
-    deco_t dec[DECS];
-    object_t* obj[OBJS];
+    deco_t dec[DECS]; //decorados
+    object_t* obj[OBJS]; //objetos en la pantalla
+    object_T* itm; //item en la pantalla
 } room_t;
 
 typedef room_t map_t[MAPW][MAPH];

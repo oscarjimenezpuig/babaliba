@@ -8,8 +8,7 @@ object_t obj_new(ushort i,sprite_t s,palette_t p) {
     o.x=o.y=-1;
     o.px=o.py=NULLPP;
     o.con=NULL;
-    o.act=0;
-    o.ene=0;
+    o.act=o.ene=o.rnd=o.prs=0;
     return o;
 }
 
