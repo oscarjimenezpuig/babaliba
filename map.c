@@ -41,7 +41,7 @@ void room_dec_grd(uchar px,uchar py,uchar* d,char* data[]) {
 }
 
 int room_obj(uchar px,uchar py,int x,int y,object_t* obj) {
-    if(room_can_plc(px,py,*obj,x,y)) {
+    if(room_can_plc(px,py,obj,x,y)) {
         obj_unplc(obj);
         obj_plc(obj,px,py,x,y);
         return 1;
@@ -49,7 +49,7 @@ int room_obj(uchar px,uchar py,int x,int y,object_t* obj) {
     return 0;
 }
 
-int room_can_plc(uchar px,uchar py,object_t o,int x,int y) {
+int room_can_plc(uchar px,uchar py,object_t* o,int x,int y) {
     room_t r=map[px][py];
     for(uchar k=0;k<r.decs;k++) {
         deco_t d=r.dec[k];
@@ -57,7 +57,7 @@ int room_can_plc(uchar px,uchar py,object_t o,int x,int y) {
             for(uchar j=0;j<2;j++) {
                 decspr_t ds=decsprs[d.cod];
                 sprite_t s=ds.spr[i][j];
-                if(spr_col(s,d.x*2*SPRDIM+SPRDIM*i,d.y*2*SPRDIM+SPRDIM+SPRDIM*j,PIXDIM,o.spr,x,y,PIXDIM)) {
+                if(spr_col(s,d.x*2*SPRDIM+SPRDIM*i,d.y*2*SPRDIM+SPRDIM+SPRDIM*j,PIXDIM,o->spr,x,y,PIXDIM)) {
                     return 0;
                 }
             }
@@ -66,11 +66,11 @@ int room_can_plc(uchar px,uchar py,object_t o,int x,int y) {
     return 1;
 }
 
-object_t* room_obj_col(uchar px,uchar py,object_t o) {
+object_t* room_obj_col(uchar px,uchar py,object_t* o) {
     room_t r=map[px][py];
     for(uchar k=0;k<r.objs;k++) {
         object_t* po=r.obj[k];
-        if(o.id!=po->id && spr_col(o.spr,o.x,o.y,PIXDIM,po->spr,po->x,po->y,PIXDIM)) return po;
+        if(o!=po && spr_col(o->spr,o->x,o->y,PIXDIM,po->spr,po->x,po->y,PIXDIM)) return po;
     }
     return NULL;
 }

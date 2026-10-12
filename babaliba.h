@@ -16,7 +16,7 @@
 #define SCRH (SPRDIM*(RDH*2+2))
 
 #define DECS 63 //numero de sprites de decorado maximo en una pantalla
-#define OBJS 7 //numero maximo de enemigos por pantalla
+#define OBJS 4 //numero maximo de objetos por pantalla
 
 #define MAPW 2 //dimension del mapa
 #define MAPH 2
@@ -37,6 +37,11 @@
 #define IDENE 1000 //primera de las identidades de los enemigos
 #define IDITM 2000 //primera de las identidades de un objeto
 #define ITPLY 4 //numero de items maximo que puede tener un jugador
+
+#define PLAYER 0 //tipos de objeto
+#define ENEMY 1
+#define ITEM 2
+#define NOTHING 3
 
 // Tipos
 
@@ -61,28 +66,15 @@ typedef struct {
 struct object_s; //predeclaracion de object_s
 
 typedef struct {
-    ushort typ; //tipo
-    sprite_t spr;
-    palette_t pal;
-    int x,y;
-    struct {
-        uchar act : 1;
-        uchar px : 3;
-        uchar py :3 ;
-    };
-} object_t;
-
-typedef struct {
-    object_t obj;
 } item_t;
 
 typedef struct {
-    object_t obj;
-    item_t* its[ITPL];
+    item_t* its[ITPLY];
+    uchar liv;
+    ushort scr;
 }player_t;
 
 typedef struct {
-    object_t obj;
     uchar rnd : 1;
     uchar prs : 1;
     int ox, oy;
@@ -90,13 +82,29 @@ typedef struct {
 }enemy_t;
 
 typedef struct {
+    sprite_t spr;
+    palette_t pal;
+    int x,y;
+    struct {
+        uchar act : 1;
+        uchar px : 3;
+        uchar py :3 ;
+        uchar typ : 2;
+    };
+    union {
+        item_t ite;
+        player_t ply;
+        enemy_t ene;
+    };
+} object_t;
+
+typedef struct {
     struct {
         uchar decs : 5; //decorados
-        uchar objs : 3; //enemigos
+        uchar objs : 3; //objetos
     };
     deco_t dec[DECS]; //decorados
-    object_t* obj[OBJS]; //objetos en la pantalla
-    object_T* itm; //item en la pantalla
+    object_t* obj[OBJS]; //objetos
 } room_t;
 
 typedef room_t map_t[MAPW][MAPH];
@@ -108,7 +116,6 @@ extern decsprs_t decsprs; //guarda todos los sprites del decorado
 extern map_t map; //guarda todo el mapa
 
 extern object_t player; //guarda el jugador
-extern int score,lives; //puntuacion y vidas
                         
 extern uchar quit; //bandera de finalizar
 
@@ -128,17 +135,14 @@ void decspr_drw(uchar code,uchar psx,uchar psy);
 
 //object.c
 
-object_t obj_new(ushort id,sprite_t spr,palette_t pal);
-//creacion de un objeto (sin lugar)
+object_t obj_new(uchar type,sprite_t spr,palette_t pal,void* clas);
+//creacion de un objeto (sin lugar) 
 
 void obj_plc(object_t* obj,uchar px,uchar py,int x,int y);
 //se emplaza un objeto (y pasa a ser activo)
 
 void obj_unplc(object_t* obj);
 //se le quita la posicion al objeto (y pasa a ser inactivo)
-
-int obj_con(object_t* object,object_t* container);
-//se pone en el contenedor el objeto
 
 object_t* obj_mov(object_t* object,int x,int y);
 //movemos un objeto de una posicion a otra (devuelve el objeto de colision)
@@ -158,12 +162,12 @@ void room_dec_grd(uchar px,uchar py,uchar* deco,char* data[]);
 int room_obj(uchar px,uchar py,int x,int y,object_t* obj);
 //introduce un objeto en la habitacion (en un lugar libre)
 
-int room_can_plc(uchar px,uchar py,object_t obj,int x,int y);
+int room_can_plc(uchar px,uchar py,object_t* obj,int x,int y);
 //dice si un objeto colisiona con el decorado
 
-object_t* room_obj_col(uchar px,uchar py,object_t obj);
-//dice si un objecto colisionara con otros objetos de la habitacion
-//devuelve el objeto colisionado
+object_t* room_obj_col(uchar px,uchar py,object_t* obj);
+//dice si un objecto colisionara con enemigo de la habitacion
+//devuelve el enemigo colisionado
 
 void room_dec_drw(uchar px,uchar py);
 //dibujo del decorado

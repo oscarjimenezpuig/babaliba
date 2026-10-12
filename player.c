@@ -2,8 +2,6 @@
 
 object_t player;
 
-int score=0;
-int lives=LIVESINI;
 uchar quit=0;
 
 #define SPRPLY 4
