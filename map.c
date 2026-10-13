@@ -9,7 +9,7 @@ static void map_ini() {
         init=1;
         for(uchar i=0;i<MAPW;i++) {
             for(uchar j=0;j<MAPH;j++) {
-                map[i][j]=(room_t){{0,0},{},{}};
+                map[i][j]=(room_t){{0,0},{},NULL,{}};
             }
         }
     }

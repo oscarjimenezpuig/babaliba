@@ -24,8 +24,10 @@ static void ply_spr() {
 void ply_ini() {
     palette_t ppl={WHITE,WHITE,WHITE,WHITE};
     ply_spr();
-    player=obj_new(IDPLA,sprply[0],ppl);
+    player=obj_new(PLAYER,sprply[0],ppl);
     obj_plc(&player,PPXI,PPYI,PXI,PYI);
+    player.ply.scr=0;
+    player.ply.liv=LIVESINI;
 }
 
 void ply_end() {
