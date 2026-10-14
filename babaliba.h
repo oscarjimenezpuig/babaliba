@@ -72,33 +72,27 @@ typedef struct {
 } item_t;
 
 typedef struct {
-    item_t* it[ITPLY];
-    struct {
-        uchar liv : 4;
-        uchar its : 4;
-    }
-    ushort scr;
-}player_t;
+    uchar cls : 2; //clase de enemigo
+} enemy_t;
 
 typedef struct {
-    uchar act : 1; //enemigo activo
-    uchar ety : 2; //tipo de enemigo
-    uchar rnd : 1;
-    uchar prs : 1;
-    uchar spox : 4;
-    uchar spoy : 4; //posicion en unidades sprite inicial
-    uchar spdx : 4; 
-    uchar spdy : 4; //posicion en unidades sprite final
-}enemy_t;
+    item_t* it[ITPLY]; //items
+    struct {
+        uchar liv : 4; //lives
+        uchar its : 4; //items poseidos
+        uchar px : 3; //pantalla x
+        uchar py :3 ; //pantalla y
+    };
+    ushort scr; //score
+}player_t;
 
 typedef struct {
     sprite_t spr;
     palette_t pal;
     int x,y;
     struct {
-        uchar px : 3;
-        uchar py :3 ;
-        uchar typ : 2;
+        uchar typ : 2; //tipo
+        uchar act : 1; //activo
     };
     union {
         item_t ite;
@@ -110,20 +104,23 @@ typedef struct {
 typedef struct {
     struct {
         uchar decs : 5; //decorados
-        uchar enes : 2; //objetos
+        uchar enes : 2; //enemigos
     };
     deco_t dec[DECS]; //decorados
     object_t* ite; //item de la posicion
-    object_t* ene[ENES];
 } room_t;
 
 typedef room_t map_t[MAPW][MAPH];
+
+typedef object_t enemies_t[ENES];
 
 // Variables
 
 extern decsprs_t decsprs; //guarda todos los sprites del decorado
 
 extern map_t map; //guarda todo el mapa
+
+extern enemies_t enemies; //enemigos de la pantalla actual
 
 extern object_t player; //guarda el jugador
                         
@@ -148,13 +145,7 @@ void decspr_drw(uchar code,uchar psx,uchar psy);
 object_t obj_new(uchar type,sprite_t spr,palette_t pal);
 //creacion de un objeto (sin lugar) 
 
-void obj_plc(object_t* obj,uchar px,uchar py,int x,int y);
-//se emplaza un objeto (y pasa a ser activo)
-
-void obj_unplc(object_t* obj);
-//se le quita la posicion al objeto (y pasa a ser inactivo)
-
-object_t* obj_mov(object_t* object,int x,int y);
+object_t* obj_mov(object_t* object,uchar px,uchar py,int x,int y);
 //movemos un objeto de una posicion a otra (devuelve el objeto de colision)
 
 void obj_drw(object_t obj);
@@ -165,31 +156,33 @@ void obj_drw(object_t obj);
 void room_dec(uchar px,uchar py,uchar decs,...);
 //introduce los decorados de la habitacion
 
-int room_ite(uchar px,uchar py,int x,int y,object_t* obj);
-//introduce el item en una habitacion (si no hay ninguno)
-
-int room_ene(uchar px,uchar py,enemy_t ene);
-//introduce un enemigo en una habitacion
-
 void room_dec_grd(uchar px,uchar py,uchar* deco,char* data[]);
 //se crea la habitacion a partir de una parrilla como los sprites,
 //solo acepta 10 decorados (de 0 a 9) contenidos en el array deco
 
-int room_obj(uchar px,uchar py,int x,int y,object_t* obj);
-//introduce un objeto en la habitacion (en un lugar libre)
+void room_set_ene(uchar px,uchar py,uchar enes);
+//da los enemigos de cada habitacion
 
 int room_can_plc(uchar px,uchar py,object_t* obj,int x,int y);
 //dice si un objeto colisiona con el decorado
 
-object_t* room_obj_col(uchar px,uchar py,object_t* obj);
-//dice si un objecto colisionara con enemigo de la habitacion
-//devuelve el enemigo colisionado
+object_t* room_obj_col(uchar px,uchar py,object_t* obj,int x,int y);
+//da las colisiones de un objeto con otro objeto de la habitacion
+
+int room_obj_ins(uchar px,uchar py,int x,int y,object_t* obj);
+//colocamos un objeto en una habitacion
+
+void room_obj_era(uchar px,uchar py,object_t* obj);
+//quitamos objeto de una habitacion
 
 void room_dec_drw(uchar px,uchar py);
 //dibujo del decorado
 
-void room_obj_drw(uchar px,uchar py);
+void room_ite_drw(uchar px,uchar py);
 //dibujo de los objetos
+
+void room_ene_drw(uchar px,uchar py);
+//dibuja todos los enemigos
 
 //player.c
 
@@ -207,5 +200,12 @@ void ply_drw();
 
 //enemy.c
 
-void ene_ini(int px,int py,enemy_t* ene);
-//inicia un enemigo cuando se visita una pantalla
+int ens_ini(uchar px,uchar py);
+//creamos los enemigos de la pantalla actual y los situamos en ella
+
+void ene_act(uchar px,uchar py);
+//actuacion de todos los enemigos de la pantalla
+
+void ene_drw(uchar px,uchar py);
+//dibujo de todos los enemigos de la pantalla
+

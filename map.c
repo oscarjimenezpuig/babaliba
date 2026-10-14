@@ -9,7 +9,7 @@ static void map_ini() {
         init=1;
         for(uchar i=0;i<MAPW;i++) {
             for(uchar j=0;j<MAPH;j++) {
-                map[i][j]=(room_t){{0,0},{},NULL,{}};
+                map[i][j]=(room_t){{0,0},{},NULL};
             }
         }
     }
@@ -40,13 +40,8 @@ void room_dec_grd(uchar px,uchar py,uchar* d,char* data[]) {
     }
 }
 
-int room_obj(uchar px,uchar py,int x,int y,object_t* obj) {
-    if(room_can_plc(px,py,obj,x,y)) {
-        obj_unplc(obj);
-        obj_plc(obj,px,py,x,y);
-        return 1;
-    }
-    return 0;
+void room_set_ene(uchar px,uchar py,uchar enes) {
+    map[px][py].enes=enes;
 }
 
 int room_can_plc(uchar px,uchar py,object_t* o,int x,int y) {
@@ -66,13 +61,47 @@ int room_can_plc(uchar px,uchar py,object_t* o,int x,int y) {
     return 1;
 }
 
-object_t* room_obj_col(uchar px,uchar py,object_t* o) {
+static int obj_col_obj(object_t a,int x,int y,object_t b) {
+    //dice si el objeto a colisiona con el b
+    return spr_col(a.spr,x,y,PIXDIM,b.spr,b.x,b.y,PIXDIM);
+}
+
+object_t* room_obj_col(uchar px,uchar py,object_t* o,int x,int y) {
+    if(o->typ!=PLAYER && obj_col_obj(*o,x,y,player)) return &player;
     room_t r=map[px][py];
-    for(uchar k=0;k<r.objs;k++) {
-        object_t* po=r.obj[k];
-        if(o!=po && spr_col(o->spr,o->x,o->y,PIXDIM,po->spr,po->x,po->y,PIXDIM)) return po;
+    for(uchar k=0;k<r.enes;k++) {
+        if(o!=enemies+k && obj_col_obj(*o,x,y,enemies[k])) return enemies+k;
     }
+    if(o->typ==PLAYER && r.ite && obj_col_obj(*o,x,y,*(r.ite))) return r.ite;
     return NULL;
+}
+
+int room_obj_ins(uchar px,uchar py,int x,int y,object_t* o) {
+    if(room_can_plc(px,py,o,x,y) && room_obj_col(px,py,o,x,y)==NULL) {
+        if(o->typ!=ITEM || map[px][py].ite==NULL) {    
+            o->x=x;
+            o->y=y;
+            o->act=1;
+            if(o->typ==ITEM) map[px][py].ite=o;
+            else if(o->typ==PLAYER) {
+                o->ply.px=px;
+                o->ply.py=py;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void room_obj_era(uchar px,uchar py,object_t* o) {
+    room_t* r=&(map[px][py]);
+    if(o->typ==PLAYER) {
+        o->ply.px=o->ply.py=NULLPP;
+    } else if(o->typ==ITEM) {
+        r->ite=NULL;
+    }
+    o->x=o->y=-1;
+    o->act=0;
 }
 
 void room_dec_drw(uchar px,uchar py) {
@@ -83,10 +112,15 @@ void room_dec_drw(uchar px,uchar py) {
     }
 }
 
-void room_obj_drw(uchar px,uchar py) {
-room_t r=map[px][py];
-    for(uchar k=0;k<r.objs;k++) {
-        object_t* o=r.obj[k];
-        obj_drw(*o);
+void room_ite_drw(uchar px,uchar py) {
+    room_t r=map[px][py];
+    if(r.ite) obj_drw(*(r.ite));
+}
+
+void room_ene_drw(uchar px,uchar py) {
+    room_t r=map[px][py];
+    uchar enes=r.enes;
+    for(uchar k=0;k<enes;k++) {
+        obj_drw(enemies[k]);
     }
 }

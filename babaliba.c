@@ -59,6 +59,14 @@ static void mapa() {
     room_dec_grd(1,0,decod,b);
     room_dec_grd(0,1,decod,c);
     room_dec_grd(1,1,decod,d);
+    //CREACION DE ENEMIGOS
+    for(int i=0;i<2;i++) {
+        for(int j=0;j<2;j++) {
+            if(i!=PPXI || j!=PPYI) {
+                room_set_ene(i,j,rnd(0,ENES));
+            }
+        }
+    }
 }
 
 static void ini() {
@@ -76,11 +84,12 @@ static void end() {
 
 int main() {
     ini();
-    room_dec_drw(player.px,player.py);
+    room_dec_drw(player.ply.px,player.ply.py);
     ply_drw();
     while(!quit) {
         ply_act();
         ply_drw();
+        ene_drw(player.ply.px,player.ply.py);
         scr_fls();
         pause(0.01);
     }
