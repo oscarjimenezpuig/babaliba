@@ -1,6 +1,7 @@
 // Includes
 
 #include <stdarg.h>
+#include <stdio.h> //dbg
 
 #include "sprite.h"
 
@@ -44,11 +45,16 @@
 
 #define SOLDIER 0 //tipos de enemigos
 #define SKELETON 1
-#define SPIDER 3 
+#define SPIDER 2 
+
+#define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
+#define CROSS 1
+#define DDT 2
 
 // Tipos
 
 typedef unsigned char uchar;
+typedef signed char schar;
 typedef unsigned short ushort;
 
 //un decorado es un sprite 2x2
@@ -73,6 +79,8 @@ typedef struct {
 
 typedef struct {
     uchar cls : 2; //clase de enemigo
+    schar vx : 2; //guarda las direcciones
+    schar vy : 2; 
 } enemy_t;
 
 typedef struct {
@@ -195,6 +203,10 @@ void ply_end();
 int ply_act();
 //actuacion del jugador
 
+int ply_col(object_t* o);
+//colision del jugador con un objeto (devuelve 1 si el jugador puede seguir
+//moviendose o 0 si no puede)
+
 void ply_drw();
 //dibuja el jugador
 
@@ -203,9 +215,12 @@ void ply_drw();
 int ens_ini(uchar px,uchar py);
 //creamos los enemigos de la pantalla actual y los situamos en ella
 
-void ene_act(uchar px,uchar py);
+void ens_end();
+//finaliza los sprites de los enemigos
+
+void ens_act(uchar px,uchar py);
 //actuacion de todos los enemigos de la pantalla
 
-void ene_drw(uchar px,uchar py);
+void ens_drw(uchar px,uchar py);
 //dibujo de todos los enemigos de la pantalla
 

@@ -1,3 +1,3 @@
 # babaliba
 Aplicacion de sprites
-ERROR: En la representacion de enemigos. Fallan los estudios de colisiones.
+TODO: Rehacer todo el tema de las clases de player y de objeto con las nuevas clases (no debe ser mucho cambio)

@@ -3,7 +3,7 @@
 # ============================================================
 
 TARGET = babaliba
-SRCS   = sprite.c decoration.c object.c map.c player.c babaliba.c
+SRCS   = sprite.c decoration.c object.c map.c player.c enemy.c babaliba.c
 
 # Archivo que almacena el tipo de compilación
 # N = normal

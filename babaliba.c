@@ -73,6 +73,7 @@ static void ini() {
     scr_ini(SCRW,SCRH);
     mapa();
     ply_ini();
+    ens_ini(player.ply.px,player.ply.py);
 }
 
 static void end() {
@@ -80,6 +81,7 @@ static void end() {
     spr_del(&decorado);
     scr_end();
     ply_end();
+    ens_end();
 }
 
 int main() {
@@ -88,8 +90,9 @@ int main() {
     ply_drw();
     while(!quit) {
         ply_act();
+        ens_act(player.ply.px,player.ply.py);
         ply_drw();
-        ene_drw(player.ply.px,player.ply.py);
+        ens_drw(player.ply.px,player.ply.py);
         scr_fls();
         pause(0.01);
     }

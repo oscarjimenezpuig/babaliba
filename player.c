@@ -68,10 +68,6 @@ static int ply_chg_scr(int vx,int vy) {
     return ret;
 }
 
-static void ply_rea_col(object_t* obj) {
-    //reaccion del player al choque con un objeto
-}
-
 int ply_act() {
     key_lis();
     int vx,vy;
@@ -89,11 +85,16 @@ int ply_act() {
         vx=vy=0;
     } else if(ply_chg_scr(vx,vy)) {
         scr_clr();
+        ens_ini(player.ply.px,player.ply.py);
         room_dec_drw(player.ply.px,player.ply.py);
+        ens_drw(player.ply.px,player.ply.py);
         scr_fls();
     }
     return (vx||vy);
 }
+
+int ply_col(object_t* o) {
+    //TODO Programar la colision
 
 void ply_drw() {
     obj_drw(player);
