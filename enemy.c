@@ -108,13 +108,13 @@ static void ene_act(object_t* e,uchar px,uchar py) {
     const uchar PCD=5; //probabilidad de cambio de direccion
     if(e->ene.vx==0 && e->ene.vy==0) {
         if(rnd(0,1)) {
-            if(e->y==player.y) {
+            if(e->y>=player.y && e->y<player.y+SPRDIM) {
                 if(e->x>player.x) e->ene.vx=-1;
                 else e->ene.vx=1;
             } else e->ene.vx=setrnddir();
         }
         else {
-            if(e->x==player.x) {
+            if(e->x>=player.x && e->x<player.x+SPRDIM) {
                 if(e->y>player.y) e->ene.vy=-1;
                 else e->ene.vy=1;
             } else e->ene.vy=setrnddir();
@@ -126,7 +126,7 @@ static void ene_act(object_t* e,uchar px,uchar py) {
         int y=e->y+PIXDIM*e->ene.vy;
         object_t* o=obj_mov(e,px,py,x,y);
         if(o && o->typ==PLAYER) {
-            //COLISION CON JUGADOR
+            ply_col(e);
         } else if(x!=e->x || y!=e->y) {
             e->ene.vx=e->ene.vy=0;
         }

@@ -28,6 +28,7 @@ void ply_ini() {
     room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
     player.ply.scr=0;
     player.ply.liv=LIVESINI;
+    player.ply.bnt=0;
 }
 
 void ply_end() {
@@ -81,9 +82,10 @@ int ply_act() {
     if(vx) ocol=obj_mov(&player,player.ply.px,player.ply.py,player.x+vx*PIXDIM,player.y);
     if(vy && !ocol) ocol=obj_mov(&player,player.ply.px,player.ply.py,player.x,player.y+vy*PIXDIM);
     if(ocol) {
-        ply_rea_col(ocol);
+        ply_col(ocol);
         vx=vy=0;
     } else if(ply_chg_scr(vx,vy)) {
+        player.ply.bnt=0;
         scr_clr();
         ens_ini(player.ply.px,player.ply.py);
         room_dec_drw(player.ply.px,player.ply.py);
@@ -93,8 +95,92 @@ int ply_act() {
     return (vx||vy);
 }
 
+static uchar arr_psh(object_t* new,object_t* arr[],uchar dim) {
+    //se introduce un objeto nuevo en el principio del array (no se verifica dimension)
+    for(int k=dim-2;k>=0;k--) {
+        arr[k+1]=arr[k];
+    }
+    arr[0]=new;
+    return dim+1;
+}
+
+static uchar arr_pop(object_t* arr[],uchar dim,object_t** o) {
+    //se extrae el ultimo objeto si existe, devuelve la nueva dimension
+    if(dim>0) {
+        --dim;
+        *o=arr[dim];
+    }
+    return dim;
+}
+
+static uchar arr_fnd(object_t* arr[],uchar dim,int (*cond)(object_t*)) {
+    //buscamos un objeto del array y devolvemos su posicion
+    uchar k=0;
+    for(;k<dim;k++) if(cond(arr[k])) break;
+    return k;
+}
+
+static int arr_is_fnd(uchar pos,uchar dim) {
+    //dice si la posicion coincide con encontrado
+    return (pos<dim);
+}
+
+static uchar arr_era(object_t* arr[],uchar dim,uchar pos) {
+    //borramos el elemento de la posicion pos y devolvemos la dimension
+    if(pos<dim) {
+        for(uchar k=pos;k<dim;k++) arr[k]=arr[k+1];
+        return dim-1;
+    }
+    return dim;
+}
+
+int ply_tak(object_t* o) {
+    if(player.ply.bnt==0) {
+        room_obj_era(player.ply.px,player.ply.py,o);
+        if(player.ply.its==ITPLY) {
+            object_t* leave;
+            player.ply.its=arr_pop(player.ply.it,player.ply.its,&leave);
+            room_obj_ins(player.ply.px,player.ply.py,player.x,player.y,leave);
+        }
+        player.ply.its=arr_psh(o,player.ply.it,player.ply.its);
+        player.ply.bnt=1;
+        return 1;
+    }
+    return 0;
+}
+
+static schar tip_weap=-1;
+
+static int cond_weap(object_t* o) {
+    return (o->typ==ITEM && o->ite.cls==tip_weap);
+}
+
+static int ply_use_weap(object_t* enemy) {
+    //usa el weapon (1 lo usa, 0 no lo usa)
+    tip_weap=enemy->ene.cls;
+    uchar pos=arr_fnd(player.ply.it,player.ply.its,cond_weap);
+    if(arr_is_fnd(pos,player.ply.its)) {
+        player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
+        return 1;
+    } else return 0;
+}
+
 int ply_col(object_t* o) {
-    //TODO Programar la colision
+    if(o->typ==ENEMY) {
+        if(ply_use_weap(o)) {
+            //muerte de enemigo
+            room_obj_era(player.ply.px,player.ply.py,o);
+            room_t* r=&map[player.ply.px][player.ply.py];
+            r->enes--;
+        } else {
+            //muerte jugador
+            room_obj_era(player.ply.px,player.ply.py,&player);
+            quit=1;
+            return 0;
+        }
+    } else if(o->typ==ITEM) return ply_tak(o);
+    return 1;
+}   
 
 void ply_drw() {
     obj_drw(player);

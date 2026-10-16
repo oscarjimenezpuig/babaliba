@@ -75,6 +75,7 @@ typedef struct {
 struct object_s; //predeclaracion de object_s
 
 typedef struct {
+    uchar cls : 4; //clase de item
 } item_t;
 
 typedef struct {
@@ -84,17 +85,18 @@ typedef struct {
 } enemy_t;
 
 typedef struct {
-    item_t* it[ITPLY]; //items
+    struct object_s* it[ITPLY]; //items
     struct {
         uchar liv : 4; //lives
         uchar its : 4; //items poseidos
         uchar px : 3; //pantalla x
-        uchar py :3 ; //pantalla y
+        uchar py : 3 ; //pantalla y
+        uchar bnt : 1; //esta bandera si esta conectada no coge nada
     };
     ushort scr; //score
 }player_t;
 
-typedef struct {
+struct object_s{
     sprite_t spr;
     palette_t pal;
     int x,y;
@@ -107,7 +109,9 @@ typedef struct {
         player_t ply;
         enemy_t ene;
     };
-} object_t;
+};
+
+typedef struct object_s object_t;
 
 typedef struct {
     struct {
@@ -202,6 +206,9 @@ void ply_end();
 
 int ply_act();
 //actuacion del jugador
+
+int ply_tak(object_t* o);
+//el jugador coge el objeto o
 
 int ply_col(object_t* o);
 //colision del jugador con un objeto (devuelve 1 si el jugador puede seguir
