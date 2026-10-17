@@ -5,7 +5,7 @@
 sprite_t decorado;
 
 static void mapa() {
-    char* dd[]=  {   "00000000",
+    char* dd[]=  {  "00000000",
                     "00000000",
                     "00000000",
                     "00000000",

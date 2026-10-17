@@ -45,11 +45,19 @@
 
 #define SOLDIER 0 //tipos de enemigos
 #define SKELETON 1
-#define SPIDER 2 
+#define SPIDER 2
+
+#define SOLPOM 50 //probabilidades de movimiento
+#define SKEPOM 75
+#define SPDPOM 90
 
 #define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
 #define CROSS 1
 #define DDT 2
+
+#define SWRS ((MAPW*MAPH)/3) //cantidad de armas disponibles
+#define CRSS SWRS
+#define DDTS SWRS
 
 // Tipos
 
@@ -230,4 +238,12 @@ void ens_act(uchar px,uchar py);
 
 void ens_drw(uchar px,uchar py);
 //dibujo de todos los enemigos de la pantalla
+
+//item.c 
+
+int ite_ini();
+//define todos los items y los coloca en las diferentes pantallas
+
+void ite_end();
+//borra todos los sprites de item
 

@@ -15,39 +15,39 @@ static palette_t psol,pskl,pspd; //paletas de los diferentes sprites
 static void sprdef() {
     static uchar init=0;
     if(!init) {
-        char* dsol[]={      "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000"
+        char* dspd[]={      "0      0",
+                            "0      0",
+                            " 0    0 ",
+                            "  0000  ",
+                            "  0000  ",
+                            " 0    0 ",
+                            "0      0",
+                            "0      0"
         };
         char* dskl[]={      "00000000",
+                            "0  00  0",
+                            "0  00  0",
                             "00000000",
                             "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000"
+                            " 000000 ",
+                            " 000000 ",
+                            "  0000  "
         };
-        char* dspd[]={      "00000000",
+        char* dsol[]={      "  0000  ",
+                            " 0 00 0 ",
                             "00000000",
                             "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000",
-                            "00000000"
+                            " 000000 ",
+                            " 0    0 ",
+                            " 0    0 ",
+                            " 0    0 "
         };
         sol[0]=spr_grd(8,dsol); 
         skl[0]=spr_grd(8,dskl); 
         spd[0]=spr_grd(8,dspd);
         psol[0]=col_new(255,0,0);
-        pskl[0]=col_new(125,0,0);
-        pspd[0]=col_new(50,0,0);
+        pskl[0]=col_new(255,0,0);
+        pspd[0]=col_new(255,0,0);
         init=1;
     }
 }
@@ -104,24 +104,41 @@ static schar setrnddir() {
     return val;
 }
 
-static void ene_act(object_t* e,uchar px,uchar py) {
+static int ene_prs(object_t* e) {
+    //persecucion del objeto
+    if(e->y>=player.y && e->y<player.y+SPRDIM) {
+        e->ene.vy=0;
+        if(e->x>player.x) e->ene.vx=-1;
+        else e->ene.vx=1;
+        return 1;
+    } else if(e->x>=player.x && e->x<player.x+SPRDIM) {
+        e->ene.vx=0;
+        if(e->y>player.y) e->ene.vy=-1;
+        else e->ene.vy=1;
+        return 1;
+    }
+    return 0;
+}
+
+static void ene_rnd(object_t* e) {
+    //movimiento random
     const uchar PCD=5; //probabilidad de cambio de direccion
     if(e->ene.vx==0 && e->ene.vy==0) {
         if(rnd(0,1)) {
-            if(e->y>=player.y && e->y<player.y+SPRDIM) {
-                if(e->x>player.x) e->ene.vx=-1;
-                else e->ene.vx=1;
-            } else e->ene.vx=setrnddir();
+            e->ene.vx=setrnddir();
+        } else {
+            e->ene.vy=setrnddir();
         }
-        else {
-            if(e->x>=player.x && e->x<player.x+SPRDIM) {
-                if(e->y>player.y) e->ene.vy=-1;
-                else e->ene.vy=1;
-            } else e->ene.vy=setrnddir();
-        }
-    }else if(rnd(0,99)<PCD) {
-        e->ene.vx=e->ene.vy=0;
-    } else {
+    } else if(rnd(0,99)<PCD) {
+        e->ene.vx=e->ene.vy;
+    }
+}
+
+static void ene_act(object_t* e,uchar px,uchar py) {
+    //accion de un enemigo
+    int pom=(e->ene.cls==SOLDIER)?SOLPOM:(e->ene.cls==SKELETON)?SKEPOM:SPDPOM;
+    if(rnd(0,99)<pom) {
+        if(!ene_prs(e)) ene_rnd(e);
         int x=e->x+PIXDIM*e->ene.vx;
         int y=e->y+PIXDIM*e->ene.vy;
         object_t* o=obj_mov(e,px,py,x,y);
@@ -131,7 +148,7 @@ static void ene_act(object_t* e,uchar px,uchar py) {
             e->ene.vx=e->ene.vy=0;
         }
     }
-}
+} 
 
 void ens_act(uchar px,uchar py) {
     uchar enes=map[px][py].enes;
