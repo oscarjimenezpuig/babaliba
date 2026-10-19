@@ -72,6 +72,7 @@ static void mapa() {
 static void ini() {
     scr_ini(SCRW,SCRH);
     mapa();
+    ite_ini();
     ply_ini();
     ens_ini(player.ply.px,player.ply.py);
 }
@@ -82,6 +83,7 @@ static void end() {
     scr_end();
     ply_end();
     ens_end();
+    ite_end();
 }
 
 int main() {
@@ -89,6 +91,7 @@ int main() {
     room_dec_drw(player.ply.px,player.ply.py);
     ply_drw();
     while(!quit) {
+        room_ite_drw(player.ply.px,player.ply.py);
         ply_act();
         ens_act(player.ply.px,player.ply.py);
         ply_drw();

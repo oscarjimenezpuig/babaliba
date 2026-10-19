@@ -35,6 +35,17 @@ void ply_end() {
     for(int k=0;k<SPRPLY;k++) spr_del(sprply+k);
 }
 
+static void ply_inv_drw() {
+    const int Y=SCRH-SPRDIM;
+    const int X=SCRW-SPRDIM*ITPLY;
+    int x=X;
+    for(uchar k=0;k<player.ply.its;k++) {
+        object_t* it=player.ply.it[k];
+        spr_drw(it->spr,it->pal,x,Y,PIXDIM);
+        x+=SPRDIM;
+    }
+}
+
 static int ply_chg_scr(int vx,int vy) {
     //funcion que detecta el cambio de pantalla
     int ret=0;
@@ -90,6 +101,7 @@ int ply_act() {
         ens_ini(player.ply.px,player.ply.py);
         room_dec_drw(player.ply.px,player.ply.py);
         ens_drw(player.ply.px,player.ply.py);
+        ply_inv_drw();
         scr_fls();
     }
     return (vx||vy);
@@ -136,6 +148,7 @@ static uchar arr_era(object_t* arr[],uchar dim,uchar pos) {
 
 int ply_tak(object_t* o) {
     if(player.ply.bnt==0) {
+        spr_era(o->spr,o->x,o->y,PIXDIM);
         room_obj_era(player.ply.px,player.ply.py,o);
         if(player.ply.its==ITPLY) {
             object_t* leave;
@@ -144,6 +157,7 @@ int ply_tak(object_t* o) {
         }
         player.ply.its=arr_psh(o,player.ply.it,player.ply.its);
         player.ply.bnt=1;
+        ply_inv_drw();
         return 1;
     }
     return 0;
@@ -161,6 +175,7 @@ static int ply_use_weap(object_t* enemy) {
     uchar pos=arr_fnd(player.ply.it,player.ply.its,cond_weap);
     if(arr_is_fnd(pos,player.ply.its)) {
         player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
+        ply_inv_drw();
         return 1;
     } else return 0;
 }
@@ -174,13 +189,13 @@ int ply_col(object_t* o) {
             r->enes--;
         } else {
             //muerte jugador
-            room_obj_era(player.ply.px,player.ply.py,&player);
             quit=1;
             return 0;
         }
     } else if(o->typ==ITEM) return ply_tak(o);
     return 1;
-}   
+}  
+
 
 void ply_drw() {
     obj_drw(player);

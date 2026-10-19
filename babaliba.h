@@ -47,9 +47,9 @@
 #define SKELETON 1
 #define SPIDER 2
 
-#define SOLPOM 50 //probabilidades de movimiento
-#define SKEPOM 75
-#define SPDPOM 90
+#define SOLPOM 25 //probabilidades de movimiento
+#define SKEPOM 50
+#define SPDPOM 75
 
 #define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
 #define CROSS 1
@@ -241,7 +241,7 @@ void ens_drw(uchar px,uchar py);
 
 //item.c 
 
-int ite_ini();
+void ite_ini();
 //define todos los items y los coloca en las diferentes pantallas
 
 void ite_end();

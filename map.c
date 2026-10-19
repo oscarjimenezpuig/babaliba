@@ -67,12 +67,14 @@ static int obj_col_obj(object_t a,int x,int y,object_t b) {
 }
 
 object_t* room_obj_col(uchar px,uchar py,object_t* o,int x,int y) {
-    if(o->typ!=PLAYER && obj_col_obj(*o,x,y,player)) return &player;
-    room_t r=map[px][py];
-    for(uchar k=0;k<r.enes;k++) {
-        if(o!=enemies+k && obj_col_obj(*o,x,y,enemies[k])) return enemies+k;
+    if(o->typ!=ITEM) {
+        if(o->typ!=PLAYER && obj_col_obj(*o,x,y,player)) return &player;
+        room_t r=map[px][py];
+        for(uchar k=0;k<r.enes;k++) {
+            if(o!=enemies+k && obj_col_obj(*o,x,y,enemies[k])) return enemies+k;
+        }
+        if(o->typ==PLAYER && r.ite && obj_col_obj(*o,x,y,*(r.ite))) return r.ite;
     }
-    if(o->typ==PLAYER && r.ite && obj_col_obj(*o,x,y,*(r.ite))) return r.ite;
     return NULL;
 }
 
