@@ -71,6 +71,7 @@ static void mapa() {
 
 static void ini() {
     scr_ini(SCRW,SCRH);
+    txt_ini();
     mapa();
     ite_ini();
     ply_ini();
@@ -81,6 +82,7 @@ static void end() {
     //decsprs_del();  
     spr_del(&decorado);
     scr_end();
+    txt_end();
     ply_end();
     ens_end();
     ite_end();

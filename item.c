@@ -49,7 +49,7 @@ static void one_ite_plc(object_t* item) {
         int x,y;
         do {
             x=rnd(0,SCRW-SPRDIM);
-            y=rnd(SPRDIM,SCRH-SPRDIM);
+            y=rnd(SPRDIM,SCRH-2*SPRDIM);
         }while(!room_obj_ins(px,py,x,y,item));
     }
 }   

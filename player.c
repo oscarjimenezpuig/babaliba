@@ -7,6 +7,7 @@ uchar quit=0;
 #define SPRPLY 4
 
 static sprite_t sprply[SPRPLY];
+static sprite_t sblank;
 
 static void ply_spr() {
     char* data[]={      "   00   ",
@@ -19,6 +20,8 @@ static void ply_spr() {
                         "  0  0  "
     };
     sprply[0]=spr_grd(8,data);
+    sblank=spr_new(1);
+    spr_ins(sblank,0,0,0);
 }
 
 void ply_ini() {
@@ -35,13 +38,38 @@ void ply_end() {
     for(int k=0;k<SPRPLY;k++) spr_del(sprply+k);
 }
 
+static void ply_era_mrk(int x,int y,uchar len) {
+    //borrado de sprites de dimesniones SPRDIM
+    palette_t pblank={BLACK};
+    for(uchar k=0;k<len;k++) {
+        spr_drw(sblank,pblank,x,y,SPRDIM);
+        x+=SPRDIM;
+    }
+}
+
 static void ply_inv_drw() {
-    const int Y=SCRH-SPRDIM;
+    //dibuja el inventario
+    const int Y=SCRH-SPRDIM+2;
     const int X=SCRW-SPRDIM*ITPLY;
+    ply_era_mrk(X,Y,ITPLY);
     int x=X;
     for(uchar k=0;k<player.ply.its;k++) {
         object_t* it=player.ply.it[k];
-        spr_drw(it->spr,it->pal,x,Y,PIXDIM);
+        if(it) {
+            spr_drw(it->spr,it->pal,x,Y,PIXMDIM);
+            x+=SPRDIM;
+        }
+    }
+}
+
+static void ply_liv_drw() {
+    //dibuja el marcador de vidas
+    const int Y=SCRH-SPRDIM+2;
+    const int X=0;
+    ply_era_mrk(X,Y,5);
+    int x=X;
+    for(int k=0;k<player.ply.liv;k++) {
+        spr_drw(player.spr,player.pal,x,Y,PIXMDIM);
         x+=SPRDIM;
     }
 }
@@ -109,7 +137,7 @@ int ply_act() {
 
 static uchar arr_psh(object_t* new,object_t* arr[],uchar dim) {
     //se introduce un objeto nuevo en el principio del array (no se verifica dimension)
-    for(int k=dim-2;k>=0;k--) {
+    for(int k=dim-1;k>=0;k--) {
         arr[k+1]=arr[k];
     }
     arr[0]=new;
@@ -184,11 +212,13 @@ int ply_col(object_t* o) {
     if(o->typ==ENEMY) {
         if(ply_use_weap(o)) {
             //muerte de enemigo
+            spr_era(o->spr,o->x,o->y,PIXDIM);
             room_obj_era(player.ply.px,player.ply.py,o);
             room_t* r=&map[player.ply.px][player.ply.py];
             r->enes--;
         } else {
             //muerte jugador
+            spr_era(player.spr,player.x,player.y,PIXDIM);
             quit=1;
             return 0;
         }
@@ -199,5 +229,6 @@ int ply_col(object_t* o) {
 
 void ply_drw() {
     obj_drw(player);
+    ply_liv_drw();
 }
 

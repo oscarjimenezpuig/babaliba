@@ -1,3 +1,3 @@
 # babaliba
 Aplicacion de sprites
-TODO: Borrado de los items del inventario
+TODO: Mejorar la persecucion de enemigos al jugador cuando esten en la misma linea o la misma columna

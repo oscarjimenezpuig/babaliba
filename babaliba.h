@@ -59,6 +59,9 @@
 #define CRSS SWRS
 #define DDTS SWRS
 
+#define PIXMDIM (PIXDIM-1) //dimensiones de pixels en marcadores
+#define SPRMDIM (PIXDIM*8)
+
 // Tipos
 
 typedef unsigned char uchar;
