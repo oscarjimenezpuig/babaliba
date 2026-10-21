@@ -54,8 +54,8 @@ static void sprdef() {
 
 static void ene_ale_pos(int* x,int* y) {
     //genera una posicion aleatoria para el enemigo
-    *x=rnd(0,RDW*2)*SPRDIM;
-    *y=rnd(1,RDH*2)*SPRDIM;
+    *x=rnd(0,SCRW-SPRDIM);
+    *y=rnd(SPRDIM,SCRH-2*SPRDIM);
 }
 
 static object_t ene_new(uchar px,uchar py) {
@@ -137,7 +137,7 @@ static void ene_rnd(object_t* e) {
 static void ene_act(object_t* e,uchar px,uchar py) {
     //accion de un enemigo
     int pom=(e->ene.cls==SOLDIER)?SOLPOM:(e->ene.cls==SKELETON)?SKEPOM:SPDPOM;
-    if(rnd(0,99)<pom) {
+    if(e->act && rnd(0,99)<pom) {
         if(!ene_prs(e)) ene_rnd(e);
         int x=e->x+PIXDIM*e->ene.vx;
         int y=e->y+PIXDIM*e->ene.vy;
@@ -160,7 +160,7 @@ void ens_act(uchar px,uchar py) {
 void ens_drw(uchar px,uchar py) {
     uchar enes=map[px][py].enes;
     for(uchar k=0;k<enes;k++) {
-        obj_drw(enemies[k]);
+        if(enemies[k].act) obj_drw(enemies[k]);
     }
 }
     

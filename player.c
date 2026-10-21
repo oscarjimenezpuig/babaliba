@@ -32,6 +32,7 @@ void ply_ini() {
     player.ply.scr=0;
     player.ply.liv=LIVESINI;
     player.ply.bnt=0;
+    player.ply.its=0;
 }
 
 void ply_end() {
@@ -74,6 +75,18 @@ static void ply_liv_drw() {
     }
 }
 
+static void reset_ene(uchar px,uchar py) {
+    //cuenta los enemigos activos
+    room_t* r=&(map[px][py]);
+    uchar count=0;
+    printf("enemigos iniciales en %i,%i=%i\n",px,py,r->enes);//dbg
+    for(uchar k=0;k<r->enes;k++) {
+        if(enemies[k].act) count++;
+    }
+    r->enes=count;
+    printf("          finales=%i\n",r->enes);//dbg
+}   
+
 static int ply_chg_scr(int vx,int vy) {
     //funcion que detecta el cambio de pantalla
     int ret=0;
@@ -100,12 +113,24 @@ static int ply_chg_scr(int vx,int vy) {
         ret=1;
     }
     if(ret) {
+        reset_ene(player.ply.px,player.ply.py);
         player.ply.px=px;
         player.ply.py=py;
         player.x=x;
         player.y=y;
     }
     return ret;
+}
+
+static void drw_act_rom() {
+    //dibuja la habitacion actual del player
+    player.ply.bnt=0;
+    scr_clr();
+    ens_ini(player.ply.px,player.ply.py);
+    room_dec_drw(player.ply.px,player.ply.py);
+    ens_drw(player.ply.px,player.ply.py);
+    ply_inv_drw();
+    scr_fls();
 }
 
 int ply_act() {
@@ -124,18 +149,12 @@ int ply_act() {
         ply_col(ocol);
         vx=vy=0;
     } else if(ply_chg_scr(vx,vy)) {
-        player.ply.bnt=0;
-        scr_clr();
-        ens_ini(player.ply.px,player.ply.py);
-        room_dec_drw(player.ply.px,player.ply.py);
-        ens_drw(player.ply.px,player.ply.py);
-        ply_inv_drw();
-        scr_fls();
+        drw_act_rom();
     }
     return (vx||vy);
 }
 
-static uchar arr_psh(object_t* new,object_t* arr[],uchar dim) {
+static int arr_psh(object_t* new,object_t* arr[],int dim) {
     //se introduce un objeto nuevo en el principio del array (no se verifica dimension)
     for(int k=dim-1;k>=0;k--) {
         arr[k+1]=arr[k];
@@ -144,7 +163,7 @@ static uchar arr_psh(object_t* new,object_t* arr[],uchar dim) {
     return dim+1;
 }
 
-static uchar arr_pop(object_t* arr[],uchar dim,object_t** o) {
+static int arr_pop(object_t* arr[],int dim,object_t** o) {
     //se extrae el ultimo objeto si existe, devuelve la nueva dimension
     if(dim>0) {
         --dim;
@@ -153,9 +172,9 @@ static uchar arr_pop(object_t* arr[],uchar dim,object_t** o) {
     return dim;
 }
 
-static uchar arr_fnd(object_t* arr[],uchar dim,int (*cond)(object_t*)) {
+static int arr_fnd(object_t* arr[],int dim,int (*cond)(object_t*)) {
     //buscamos un objeto del array y devolvemos su posicion
-    uchar k=0;
+    int k=0;
     for(;k<dim;k++) if(cond(arr[k])) break;
     return k;
 }
@@ -212,14 +231,21 @@ int ply_col(object_t* o) {
     if(o->typ==ENEMY) {
         if(ply_use_weap(o)) {
             //muerte de enemigo
+            o->act=0;
             spr_era(o->spr,o->x,o->y,PIXDIM);
             room_obj_era(player.ply.px,player.ply.py,o);
-            room_t* r=&map[player.ply.px][player.ply.py];
-            r->enes--;
         } else {
             //muerte jugador
             spr_era(player.spr,player.x,player.y,PIXDIM);
-            quit=1;
+            pause(1);
+            player.ply.liv-=1;
+            if(player.ply.liv==0) {
+                quit=1;
+            } else {
+                room_obj_era(player.ply.px,player.ply.py,&player);
+                room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
+                drw_act_rom();
+            }
             return 0;
         }
     } else if(o->typ==ITEM) return ply_tak(o);
