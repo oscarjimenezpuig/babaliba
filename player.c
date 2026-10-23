@@ -79,12 +79,10 @@ static void reset_ene(uchar px,uchar py) {
     //cuenta los enemigos activos
     room_t* r=&(map[px][py]);
     uchar count=0;
-    printf("enemigos iniciales en %i,%i=%i\n",px,py,r->enes);//dbg
     for(uchar k=0;k<r->enes;k++) {
         if(enemies[k].act) count++;
     }
     r->enes=count;
-    printf("          finales=%i\n",r->enes);//dbg
 }   
 
 static int ply_chg_scr(int vx,int vy) {

@@ -181,7 +181,8 @@ void room_dec(uchar px,uchar py,uchar decs,...);
 
 void room_dec_grd(uchar px,uchar py,uchar* deco,char* data[]);
 //se crea la habitacion a partir de una parrilla como los sprites,
-//solo acepta 10 decorados (de 0 a 9) contenidos en el array deco
+//acepta decorados desde la a hasta la z, se pone . en los vacios, en deco
+//estan ordenados los decorados donde 0 representa la a, 1 la b,...
 
 void room_set_ene(uchar px,uchar py,uchar enes);
 //da los enemigos de cada habitacion

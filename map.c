@@ -30,8 +30,8 @@ void room_dec_grd(uchar px,uchar py,uchar* d,char* data[]) {
     for(uchar k=0;k<8;k++) {
         char* p=data[k];
         while(*p!='\0') {
-            if(*p!=' ') {
-                uchar cc=*p-'0';
+            if(*p!='.' && *p>='a' && *p<='z') {
+                uchar cc=*p-'a';
                 deco_t dn={p-data[k],k,d[cc]};
                 r->dec[r->decs++]=dn;
             }
