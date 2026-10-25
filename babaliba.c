@@ -2,59 +2,44 @@
 
 #include "babaliba.h"
 
-sprite_t decorado;
-
 static void mapa() {
-    char* dd[]=  {  "00000000",
-                    "00000000",
-                    "00000000",
-                    "00000000",
-                    "00000000",
-                    "00000000",
-                    "00000000",
-                    "00000000"
+    char* a[]={     "aaaaaaaa",
+                    "a       ",
+                    "aaa     ",
+                    "a       ",
+                    "a   bb  ",
+                    "a       ",
+                    "a",
+                    "a"
     };
-    decorado=spr_grd(8,dd);
-    palette_t pd={col_new(0,255,0),BLACK,BLACK,BLACK};
-    sprite_t dspr[]={decorado,decorado,decorado,decorado};
-    decspr_new(dspr,pd);
-    char* a[]={     "00000000",
-                    "0       ",
-                    "000     ",
-                    "0       ",
-                    "0   00  ",
-                    "0       ",
-                    "0",
-                    "0"
+    char* b[]={     "aaaaaaaa",
+                    "       a",
+                    " bb    a",
+                    "   b   a",
+                    "       a",
+                    "       a",
+                    "       a",
+                    "       a"
     };
-    char* b[]={     "00000000",
-                    "       0",
-                    " 00    0",
-                    "   0   0",
-                    "       0",
-                    "       0",
-                    "       0",
-                    "       0"
+    char* c[]={     "a",
+                    "a",
+                    "a",
+                    "a",
+                    "a",
+                    "a",
+                    "a",
+                    "aaaaaaaa"
     };
-    char* c[]={     "0",
-                    "0",
-                    "0",
-                    "0",
-                    "0",
-                    "0",
-                    "0",
-                    "00000000"
+    char* d[]={     "       a",
+                    "       a",
+                    "       a",
+                    "       a",
+                    "       a",
+                    "       a",
+                    "  bbb  a",
+                    "aaaaaaaa"
     };
-    char* d[]={     "       0",
-                    "       0",
-                    "       0",
-                    "       0",
-                    "       0",
-                    "       0",
-                    "  000  0",
-                    "00000000"
-    };
-    uchar decod[]={0};
+    uchar decod[]={0,1};
     room_dec_grd(0,0,decod,a);
     room_dec_grd(1,0,decod,b);
     room_dec_grd(0,1,decod,c);
@@ -72,6 +57,7 @@ static void mapa() {
 static void ini() {
     scr_ini(SCRW,SCRH);
     txt_ini();
+    isl_ini();
     mapa();
     ite_ini();
     ply_ini();
@@ -80,12 +66,12 @@ static void ini() {
 
 static void end() {
     //decsprs_del();  
-    spr_del(&decorado);
     scr_end();
     txt_end();
     ply_end();
     ens_end();
     ite_end();
+    isl_end();
 }
 
 int main() {

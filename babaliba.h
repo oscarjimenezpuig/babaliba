@@ -1,4 +1,4 @@
-// Includes
+// Includesi
 
 #include <stdarg.h>
 #include <stdio.h> //dbg
@@ -250,4 +250,12 @@ void ite_ini();
 
 void ite_end();
 //borra todos los sprites de item
+
+//island.c
+
+void isl_ini();
+//inicia toda la isla colocando items y decorados
+
+void isl_end();
+//finaliza toda la isla, borrando todos los sprites de ella
 
