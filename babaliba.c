@@ -23,23 +23,23 @@ static void mapa() {
     };
     char* c[]={     "a",
                     "a",
-                    "a",
-                    "a",
-                    "a",
+                    "a   dd",
+                    "a   d",
+                    "a   d",
                     "a",
                     "a",
                     "aaaaaaaa"
     };
     char* d[]={     "       a",
                     "       a",
-                    "       a",
-                    "       a",
-                    "       a",
+                    "  c    a",
+                    " ccc   a",
+                    " c     a",
                     "       a",
                     "  bbb  a",
                     "aaaaaaaa"
     };
-    uchar decod[]={0,1};
+    uchar decod[]={0,1,2,3};
     room_dec_grd(0,0,decod,a);
     room_dec_grd(1,0,decod,b);
     room_dec_grd(0,1,decod,c);

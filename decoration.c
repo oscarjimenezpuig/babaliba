@@ -32,4 +32,3 @@ void decspr_drw(uchar c,uchar x,uchar y) {
     }
 }
 
-
