@@ -17,16 +17,16 @@ static void mapa() {
                     " bb    a",
                     "   b   a",
                     "       a",
-                    "       a",
+                    "  f    a",
                     "       a",
                     "       a"
     };
     char* c[]={     "a",
                     "a",
-                    "a   dd",
+                    "a   ddd",
                     "a   d",
+                    "a   d e",
                     "a   d",
-                    "a",
                     "a",
                     "aaaaaaaa"
     };
@@ -39,7 +39,7 @@ static void mapa() {
                     "  bbb  a",
                     "aaaaaaaa"
     };
-    uchar decod[]={0,1,2,3};
+    uchar decod[]={0,1,2,3,4,5};
     room_dec_grd(0,0,decod,a);
     room_dec_grd(1,0,decod,b);
     room_dec_grd(0,1,decod,c);
