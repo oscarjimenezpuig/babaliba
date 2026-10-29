@@ -15,29 +15,10 @@ static void map_ini() {
     }
 }
 
-void room_dec(uchar px,uchar py,uchar ds,...) {
+void room_dec(uchar px,uchar py,deco_t deco) {
     map_ini();
     room_t* r=&(map[px][py]);
-    va_list l;
-    va_start(l,ds);
-    for(uchar k=0;k<ds && r->decs<DECS;k++) r->dec[r->decs++]=va_arg(l,deco_t);
-    va_end(l);
-}
-
-void room_dec_grd(uchar px,uchar py,uchar* d,char* data[]) {
-    map_ini();
-    room_t* r=&(map[px][py]);
-    for(uchar k=0;k<8;k++) {
-        char* p=data[k];
-        while(*p!='\0') {
-            if(*p!='.' && *p>='a' && *p<='z') {
-                uchar cc=*p-'a';
-                deco_t dn={p-data[k],k,d[cc]};
-                r->dec[r->decs++]=dn;
-            }
-            p++;
-        }
-    }
+    r->dec[r->decs++]=deco;
 }
 
 void room_set_ene(uchar px,uchar py,uchar enes) {
