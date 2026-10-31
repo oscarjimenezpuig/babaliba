@@ -145,6 +145,52 @@ static void montana() {
     decspr_new(spr+8,pal);
 }
 
+static void ruina() {
+    char* da[]={    "  000000",
+                    " 0322222",
+                    " 0111111",
+                    "   00000",
+                    "   03322",
+                    "   03322",
+                    "   03322",
+                    "   03322"
+    };
+    char* db[]={    "000000",
+                    "2222210",
+                    "1111110",
+                    "00000",
+                    "22110",
+                    "22110",
+                    "22110",
+                    "22110"
+    };
+    char* dc[]={    "   03322",
+                    "   03322",
+                    "   03322",
+                    "   03322",
+                    "   00000",
+                    "  000000",
+                    " 0322222",
+                    " 0000000"
+    };
+    char* dd[]={    "22110",
+                    "22110",
+                    "22110",
+                    "22110",
+                    "00000",
+                    "000000",
+                    "2222210",
+                    "0000000"
+    };
+    nspr(da);
+    nspr(db);
+    nspr(dc);
+    nspr(dd);
+    palette_t pal={col_new(15,15,27),col_new(58,63,92),col_new(138,143,176),col_new(230,232,245)};
+    decspr_new(spr+12,pal);
+}
+
+
 static void muro() {
     char* da[]={    "33333330",
                     "32222210",
@@ -187,7 +233,7 @@ static void muro() {
     nspr(dc);
     nspr(dd);
     palette_t pal={col_new(52,46,60),col_new(138,130,142),col_new(192,184,190),col_new(234,228,224)};
-    decspr_new(spr+12,pal);
+    decspr_new(spr+16,pal);
 }
 
 static void fuente() {
@@ -232,58 +278,14 @@ static void fuente() {
     nspr(dc);
     nspr(dd);
     palette_t pal={col_new(20,24,48),col_new(96,104,128),col_new(64,160,224),col_new(220,240,255)};
-    decspr_new(spr+16,pal);
-}
-
-static void ruina() {
-    char* da[]={    "  000000",
-                    " 0322222",
-                    " 0111111",
-                    "   00000",
-                    "   03322",
-                    "   03322",
-                    "   03322",
-                    "   03322"
-    };
-    char* db[]={    "000000",
-                    "2222210",
-                    "1111110",
-                    "00000",
-                    "22110",
-                    "22110",
-                    "22110",
-                    "22110"
-    };
-    char* dc[]={    "   03322",
-                    "   03322",
-                    "   03322",
-                    "   03322",
-                    "   00000",
-                    "  000000",
-                    " 0322222",
-                    " 0000000"
-    };
-    char* dd[]={    "22110",
-                    "22110",
-                    "22110",
-                    "22110",
-                    "00000",
-                    "000000",
-                    "2222210",
-                    "0000000"
-    };
-    nspr(da);
-    nspr(db);
-    nspr(dc);
-    nspr(dd);
-    palette_t pal={col_new(15,15,27),col_new(58,63,92),col_new(138,143,176),col_new(230,232,245)};
     decspr_new(spr+20,pal);
 }
 
 #undef nspr
 
 static void isl_map() {
-    char map[80][80];
+    //lectura del mapa y definicion de las pantallas
+    char map[MAPW*RDW][MAPH*RDH];
     FILE* file=fopen("mapa.map","r");
     if(file) {
         char c=0;
@@ -298,6 +300,7 @@ static void isl_map() {
                 }
                 x=0;
             } else if(c!=' ') {
+                line=1;
                 map[x++][y]=c;
             }
         }
@@ -305,17 +308,28 @@ static void isl_map() {
     }
     uchar px,py;
     uchar x,y;
-    for(int f=0;f<80;f++) {
+    for(int f=0;f<MAPW*RDW;f++) {
         py=f/8;
         y=f%8;
-        for(int c=0;c<80;c++) {
+        for(int c=0;c<MAPH*RDH;c++) {
             px=c/8;
             x=c%8;
             char ch=map[c][f];
             if(ch!='.') {
                 uchar code=ch-'0';
                 deco_t deco={x,y,code};
-                room_dec(px,py,deco);
+                room_dec_ins(px,py,deco);
+            }
+        }
+    }
+}
+
+static void isl_ene() {
+    //se establece el numero de enemigos de cada pantalla
+    for(uchar px=0;px<MAPW;px++) {
+        for(uchar py=0;py<MAPH;py++) {
+            if(px!=PPXI || py!=PPYI) {
+                room_set_ene(px,py,rnd(0,3));
             }
         }
     }
@@ -325,10 +339,11 @@ void isl_ini() {
     agua();
     bosque();
     montana();
+    ruina();
     muro();
     fuente();
-    ruina();
     isl_map();
+    isl_ene();
 }
 
 void isl_end() {

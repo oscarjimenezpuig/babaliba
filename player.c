@@ -4,20 +4,20 @@ object_t player;
 
 uchar quit=0;
 
-#define SPRPLY 4
+#define SPRPLY 1
 
 static sprite_t sprply[SPRPLY];
 static sprite_t sblank;
 
 static void ply_spr() {
-    char* data[]={      "   00   ",
-                        "   00   ", 
-                        "00000000", 
-                        "0 0000 0", 
-                        "0  00  0", 
-                        "  0000  ", 
-                        "  0  0  ", 
-                        "  0  0  "
+    char* data[]={      "  3333",
+                        " 311113", 
+                        " 101101", 
+                        " 222222", 
+                        "12222221", 
+                        " 222222", 
+                        "  3  3", 
+                        " 33  33"
     };
     sprply[0]=spr_grd(8,data);
     sblank=spr_new(1);
@@ -25,7 +25,7 @@ static void ply_spr() {
 }
 
 void ply_ini() {
-    palette_t ppl={WHITE,WHITE,WHITE,WHITE};
+    palette_t ppl={BLACK,col_new(240,192,144),col_new(56,166,85),col_new(122,74,32)};
     ply_spr();
     player=obj_new(PLAYER,sprply[0],ppl);
     room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
@@ -112,6 +112,7 @@ static int ply_chg_scr(int vx,int vy) {
     }
     if(ret) {
         reset_ene(player.ply.px,player.ply.py);
+        dea_res();
         player.ply.px=px;
         player.ply.py=py;
         player.x=x;
@@ -122,7 +123,6 @@ static int ply_chg_scr(int vx,int vy) {
 
 static void drw_act_rom() {
     //dibuja la habitacion actual del player
-    player.ply.bnt=0;
     scr_clr();
     ens_ini(player.ply.px,player.ply.py);
     room_dec_drw(player.ply.px,player.ply.py);
@@ -140,16 +140,12 @@ int ply_act() {
     if(key_in('j')) vx=-1;
     else if(key_in('l')) vx=1;
     if(key_in('q')) quit=1;
-    object_t* ocol=NULL;
-    if(vx) ocol=obj_mov(&player,player.ply.px,player.ply.py,player.x+vx*PIXDIM,player.y);
-    if(vy && !ocol) ocol=obj_mov(&player,player.ply.px,player.ply.py,player.x,player.y+vy*PIXDIM);
-    if(ocol) {
-        ply_col(ocol);
-        vx=vy=0;
-    } else if(ply_chg_scr(vx,vy)) {
-        drw_act_rom();
-    }
-    return (vx||vy);
+    int move=0;
+    if(vx) move=obj_mov(&player,player.ply.px,player.ply.py,player.x+vx*PIXDIM,player.y,ply_col);
+    if(vy && !move) move=obj_mov(&player,player.ply.px,player.ply.py,player.x,player.y+vy*PIXDIM,ply_col);
+    if(!move) vx=vy=0;
+    else if(ply_chg_scr(vx,vy)) drw_act_rom();
+    return move;
 }
 
 static int arr_psh(object_t* new,object_t* arr[],int dim) {
@@ -191,23 +187,6 @@ static uchar arr_era(object_t* arr[],uchar dim,uchar pos) {
     return dim;
 }
 
-int ply_tak(object_t* o) {
-    if(player.ply.bnt==0) {
-        spr_era(o->spr,o->x,o->y,PIXDIM);
-        room_obj_era(player.ply.px,player.ply.py,o);
-        if(player.ply.its==ITPLY) {
-            object_t* leave;
-            player.ply.its=arr_pop(player.ply.it,player.ply.its,&leave);
-            room_obj_ins(player.ply.px,player.ply.py,player.x,player.y,leave);
-        }
-        player.ply.its=arr_psh(o,player.ply.it,player.ply.its);
-        player.ply.bnt=1;
-        ply_inv_drw();
-        return 1;
-    }
-    return 0;
-}
-
 static schar tip_weap=-1;
 
 static int cond_weap(object_t* o) {
@@ -230,8 +209,11 @@ int ply_col(object_t* o) {
         if(ply_use_weap(o)) {
             //muerte de enemigo
             o->act=0;
-            spr_era(o->spr,o->x,o->y,PIXDIM);
+            int ox=o->x;
+            int oy=o->y;
+            spr_era(o->spr,ox,oy,PIXDIM);
             room_obj_era(player.ply.px,player.ply.py,o);
+            dea_new(ox,oy);
         } else {
             //muerte jugador
             spr_era(player.spr,player.x,player.y,PIXDIM);
@@ -244,10 +226,23 @@ int ply_col(object_t* o) {
                 room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
                 drw_act_rom();
             }
-            return 0;
         }
-    } else if(o->typ==ITEM) return ply_tak(o);
-    return 1;
+        return 1;
+    } else if(o->typ==ITEM && player.ply.bnt==0) {
+        int ox=o->x;
+        int oy=o->y;
+        spr_era(o->spr,ox,oy,PIXDIM);
+        room_obj_era(player.ply.px,player.ply.py,o);
+        if(player.ply.its==ITPLY) {
+            object_t* leave;
+            player.ply.its=arr_pop(player.ply.it,player.ply.its,&leave);
+            room_obj_ins(player.ply.px,player.ply.py,ox,oy,leave);
+            player.ply.bnt=1;
+        }
+        player.ply.its=arr_psh(o,player.ply.it,player.ply.its);
+        ply_inv_drw();
+    }
+    return 0;
 }  
 
 

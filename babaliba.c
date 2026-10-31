@@ -19,6 +19,7 @@ static void end() {
     ens_end();
     ite_end();
     isl_end();
+    dea_end();
 }
 
 int main() {
@@ -27,6 +28,7 @@ int main() {
     ply_drw();
     while(!quit) {
         room_ite_drw(player.ply.px,player.ply.py);
+        dea_act();
         ply_act();
         ens_act(player.ply.px,player.ply.py);
         ply_drw();

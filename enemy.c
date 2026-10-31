@@ -6,48 +6,57 @@ enemies_t enemies;
 #define SKLS 1
 #define SPDS 1
 
-static sprite_t sol[1]; //sprite del soldado
-static sprite_t skl[1]; //sprite del esqueleto
-static sprite_t spd[1]; //sprite de la araña
+static sprite_t sol[SOLS]; //sprite del soldado
+static sprite_t skl[SKLS]; //sprite del esqueleto
+static sprite_t spd[SPDS]; //sprite de la araña
 
 static palette_t psol,pskl,pspd; //paletas de los diferentes sprites
 
 static void sprdef() {
     static uchar init=0;
     if(!init) {
-        char* dspd[]={      "0      0",
-                            "0      0",
-                            " 0    0 ",
-                            "  0000  ",
-                            "  0000  ",
-                            " 0    0 ",
-                            "0      0",
-                            "0      0"
+        char* dspd[]={      "2  00  2",
+                            " 2 00 2",
+                            "2 0110 2",
+                            " 203302  ",
+                            "20000002",
+                            " 200002",
+                            "2 2  2 2",
+                            "2      2"
         };
-        char* dskl[]={      "00000000",
-                            "0  00  0",
-                            "0  00  0",
-                            "00000000",
-                            "00000000",
-                            " 000000 ",
-                            " 000000 ",
-                            "  0000  "
+        char* dskl[]={      "  1111",
+                            " 131131",
+                            "  1001",
+                            "  1212",
+                            " 111111",
+                            " 121121",
+                            "  1  1",
+                            " 11  11"
         };
-        char* dsol[]={      "  0000  ",
-                            " 0 00 0 ",
-                            "00000000",
-                            "00000000",
-                            " 000000 ",
-                            " 0    0 ",
-                            " 0    0 ",
-                            " 0    0 "
+        char* dsol[]={      "  3333",
+                            " 333333",
+                            "  1001",
+                            " 222222",
+                            "12222223",
+                            " 222222",
+                            "  2  2",
+                            " 00  00"
         };
         sol[0]=spr_grd(8,dsol); 
         skl[0]=spr_grd(8,dskl); 
         spd[0]=spr_grd(8,dspd);
-        psol[0]=col_new(255,0,0);
-        pskl[0]=col_new(255,0,0);
-        pspd[0]=col_new(255,0,0);
+        psol[0]=col_new(32,33,20);
+        psol[1]=col_new(240,192,144);
+        psol[2]=col_new(168,32,40);
+        psol[3]=col_new(176,184,196);
+        pskl[0]=col_new(0,0,0);
+        pskl[1]=col_new(237,232,208);
+        pskl[2]=col_new(138,136,120);
+        pskl[3]=col_new(224,32,32);
+        pspd[0]=col_new(16,16,16);
+        pspd[1]=col_new(255,32,32);
+        pspd[2]=col_new(112,112,120);
+        pspd[3]=col_new(248,248,248);
         init=1;
     }
 }
@@ -134,17 +143,25 @@ static void ene_rnd(object_t* e) {
     }
 }
 
+object_t* enemy=NULL;
+
+static int ene_col(object_t* obj) {
+    if(obj->typ==PLAYER) {
+        ply_col(enemy);
+        return 1;
+    }
+    return 0;
+}
+
 static void ene_act(object_t* e,uchar px,uchar py) {
     //accion de un enemigo
+    enemy=e;
     int pom=(e->ene.cls==SOLDIER)?SOLPOM:(e->ene.cls==SKELETON)?SKEPOM:SPDPOM;
     if(e->act && rnd(0,99)<pom) {
         if(!ene_prs(e)) ene_rnd(e);
         int x=e->x+PIXDIM*e->ene.vx;
         int y=e->y+PIXDIM*e->ene.vy;
-        object_t* o=obj_mov(e,px,py,x,y);
-        if(o && o->typ==PLAYER) {
-            ply_col(e);
-        } else if(x!=e->x || y!=e->y) {
+        if(!obj_mov(e,px,py,x,y,ene_col)) {
             e->ene.vx=e->ene.vy=0;
         }
     }

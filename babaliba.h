@@ -19,8 +19,8 @@
 #define DECS 63 //numero de sprites de decorado maximo en una pantalla
 #define ENES 3 //numero maximo de enemigos
 
-#define MAPW 2 //dimension del mapa
-#define MAPH 2
+#define MAPW 10 //dimension del mapa
+#define MAPH 10
 
 #define NULLPP ((MAPW>MAPH)?(MAPW):(MAPH)) //posicion de pantalla nula
 
@@ -29,8 +29,8 @@
 #define PPXI 0 //posicion de pantalla inicial del player
 #define PPYI 0 
 
-#define PXI SPRDIM*2 //posicion dentro de la pantalla inicial
-#define PYI SPRDIM*3
+#define PXI SPRDIM*11 //posicion dentro de la pantalla inicial
+#define PYI SPRDIM*11
 
 #define POPSIZ 3 //numero maximo de objetos que puede tener un jugador
 
@@ -100,8 +100,8 @@ typedef struct {
     struct {
         uchar liv : 4; //lives
         uchar its : 4; //items poseidos
-        uchar px : 3; //pantalla x
-        uchar py : 3 ; //pantalla y
+        uchar px : 4; //pantalla x
+        uchar py : 4; //pantalla y
         uchar bnt : 1; //esta bandera si esta conectada no coge nada
     };
     ushort scr; //score
@@ -126,7 +126,7 @@ typedef struct object_s object_t;
 
 typedef struct {
     struct {
-        uchar decs : 5; //decorados
+        uchar decs : 6; //decorados
         uchar enes : 2; //enemigos
     };
     deco_t dec[DECS]; //decorados
@@ -136,6 +136,15 @@ typedef struct {
 typedef room_t map_t[MAPW][MAPH];
 
 typedef object_t enemies_t[ENES];
+
+typedef int (*colision_t)(object_t*); //funcion que actua sobre colisiones de objetos
+
+typedef struct {
+    uchar spr : 3;
+    uchar ite : 4;
+    uchar off : 1;
+    int x,y;
+} death_t;
 
 // Variables
 
@@ -168,15 +177,15 @@ void decspr_drw(uchar code,uchar psx,uchar psy);
 object_t obj_new(uchar type,sprite_t spr,palette_t pal);
 //creacion de un objeto (sin lugar) 
 
-object_t* obj_mov(object_t* object,uchar px,uchar py,int x,int y);
-//movemos un objeto de una posicion a otra (devuelve el objeto de colision)
+int obj_mov(object_t* object,uchar px,uchar py,int x,int y,colision_t colision);
+//movemos un objeto de una posicion a otra devuelve 1 si hay movimiento 0 si no
 
 void obj_drw(object_t obj);
 //dibuja el objeto
 
 //map.c
 
-void room_dec(uchar px,uchar py,deco_t deco);
+void room_dec_ins(uchar px,uchar py,deco_t deco);
 //introduce un decorado en la habitacion
 
 void room_set_ene(uchar px,uchar py,uchar enes);
@@ -214,9 +223,6 @@ void ply_end();
 int ply_act();
 //actuacion del jugador
 
-int ply_tak(object_t* o);
-//el jugador coge el objeto o
-
 int ply_col(object_t* o);
 //colision del jugador con un objeto (devuelve 1 si el jugador puede seguir
 //moviendose o 0 si no puede)
@@ -253,4 +259,18 @@ void isl_ini();
 
 void isl_end();
 //finaliza toda la isla, borrando todos los sprites de ella
+
+//death.c
+
+void dea_new(int x,int y);
+//establece un nuevo death en una posicion dada
+
+void dea_res();
+//resetea todas las muertes poniendolas en off
+
+void dea_act();
+//actuacion de todos los dea que estan activos
+
+void dea_end();
+//finaliza todos los sprites de death
 

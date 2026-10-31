@@ -15,7 +15,7 @@ static void map_ini() {
     }
 }
 
-void room_dec(uchar px,uchar py,deco_t deco) {
+void room_dec_ins(uchar px,uchar py,deco_t deco) {
     map_ini();
     room_t* r=&(map[px][py]);
     r->dec[r->decs++]=deco;
