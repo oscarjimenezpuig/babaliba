@@ -47,13 +47,14 @@
 #define SKELETON 1
 #define SPIDER 2
 
-#define SOLPOM 25 //probabilidades de movimiento
-#define SKEPOM 50
-#define SPDPOM 75
+#define SOLPOM 30 //probabilidades de movimiento
+#define SKEPOM 40
+#define SPDPOM 60
 
 #define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
 #define CROSS 1
 #define DDT 2
+#define KEY 3 //no mata enemigo, hay solo una y abre la puerta
 
 #define SWRS ((MAPW*MAPH)/3) //cantidad de armas disponibles
 #define CRSS SWRS
