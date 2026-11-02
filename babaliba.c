@@ -6,6 +6,7 @@ static void ini() {
     scr_ini(SCRW,SCRH);
     txt_ini();
     isl_ini();
+    dor_ini();
     ite_ini();
     ply_ini();
     ens_ini(player.ply.px,player.ply.py);
@@ -20,6 +21,7 @@ static void end() {
     ite_end();
     isl_end();
     dea_end();
+    dor_end();
 }
 
 int main() {
@@ -31,6 +33,7 @@ int main() {
         dea_act();
         ply_act();
         ens_act(player.ply.px,player.ply.py);
+        dor_drw();
         ply_drw();
         ens_drw(player.ply.px,player.ply.py);
         scr_fls();

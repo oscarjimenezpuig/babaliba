@@ -142,7 +142,11 @@ int ply_act() {
     if(key_in('q')) quit=1;
     int move=0;
     if(vx) move=obj_mov(&player,player.ply.px,player.ply.py,player.x+vx*PIXDIM,player.y,ply_col);
-    if(vy && !move) move=obj_mov(&player,player.ply.px,player.ply.py,player.x,player.y+vy*PIXDIM,ply_col);
+    if(vy && move!=1) move=obj_mov(&player,player.ply.px,player.ply.py,player.x,player.y+vy*PIXDIM,ply_col);
+    if(move==-1) {
+        if(ply_opn()) move=1;
+        else move=0;
+    }
     if(!move) vx=vy=0;
     else if(ply_chg_scr(vx,vy)) drw_act_rom();
     return move;
@@ -243,8 +247,21 @@ int ply_col(object_t* o) {
         ply_inv_drw();
     }
     return 0;
-}  
+} 
 
+static int iskey(object_t* o) {
+    return (o->typ==ITEM && o->ite.cls==KEY);
+}
+
+int ply_opn() {
+    int pk=arr_fnd(player.ply.it,player.ply.its,iskey);
+    if(pk<player.ply.its) {
+        arr_era(player.ply.it,player.ply.its,pk);
+        dor_opn();
+        return 1;
+    }
+    return 0;
+}
 
 void ply_drw() {
     obj_drw(player);

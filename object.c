@@ -14,14 +14,16 @@ int obj_mov(object_t* o,uchar px,uchar py,int x,int y,colision_t col) {
     object_t* oc=NULL;
     if(x>=0 && x<=SCRW-SPRDIM && y>=SPRDIM && y<=SCRH-2*SPRDIM) {
         if(room_can_plc(px,py,o,x,y)) {
-            oc=room_obj_col(px,py,o,x,y);
-            if(!oc && o->typ==PLAYER) o->ply.bnt=0;
-            if(!oc || col==NULL || !col(oc)) {
-                spr_era(o->spr,o->x,o->y,PIXDIM);
-                o->x=x;
-                o->y=y;
-                return 1;
-            }
+            if(!dor_col(o,x,y)) {
+                oc=room_obj_col(px,py,o,x,y);
+                if(!oc && o->typ==PLAYER) o->ply.bnt=0;
+                if(!oc || col==NULL || !col(oc)) {
+                    spr_era(o->spr,o->x,o->y,PIXDIM);
+                    o->x=x;
+                    o->y=y;
+                    return 1;
+                }
+            } else return (o->typ==PLAYER)?-1:0;
         }
     }
     return 0;

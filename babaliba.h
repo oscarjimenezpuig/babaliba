@@ -41,15 +41,16 @@
 #define PLAYER 0 //tipos de objeto
 #define ENEMY 1
 #define ITEM 2
-#define NOTHING 3
+#define DOOR 3
+#define NOTHING 7
 
 #define SOLDIER 0 //tipos de enemigos
 #define SKELETON 1
 #define SPIDER 2
 
-#define SOLPOM 30 //probabilidades de movimiento
-#define SKEPOM 40
-#define SPDPOM 60
+#define SOLPOM 0 //30 //probabilidades de movimiento
+#define SKEPOM 0 //40
+#define SPDPOM 0 //60
 
 #define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
 #define CROSS 1
@@ -62,6 +63,8 @@
 
 #define PIXMDIM (PIXDIM-1) //dimensiones de pixels en marcadores
 #define SPRMDIM (PIXDIM*8)
+
+#define DOORS 4 //numero de puertas
 
 // Tipos
 
@@ -113,7 +116,7 @@ struct object_s{
     palette_t pal;
     int x,y;
     struct {
-        uchar typ : 2; //tipo
+        uchar typ : 3; //tipo
         uchar act : 1; //activo
     };
     union {
@@ -159,6 +162,8 @@ extern object_t player; //guarda el jugador
                         
 extern uchar quit; //bandera de finalizar
 
+extern object_t door[]; //guarda la puerta
+
 // Funciones
 
 //decoration.c
@@ -180,6 +185,7 @@ object_t obj_new(uchar type,sprite_t spr,palette_t pal);
 
 int obj_mov(object_t* object,uchar px,uchar py,int x,int y,colision_t colision);
 //movemos un objeto de una posicion a otra devuelve 1 si hay movimiento 0 si no
+//-1 si detecta colision con la puerta (en caso de player);
 
 void obj_drw(object_t obj);
 //dibuja el objeto
@@ -228,6 +234,9 @@ int ply_col(object_t* o);
 //colision del jugador con un objeto (devuelve 1 si el jugador puede seguir
 //moviendose o 0 si no puede)
 
+int ply_opn();
+//jugador intenta abrir la puerta
+
 void ply_drw();
 //dibuja el jugador
 
@@ -274,4 +283,22 @@ void dea_act();
 
 void dea_end();
 //finaliza todos los sprites de death
+
+//door.c
+
+void dor_ini();
+//inicia los sprites de la puerta
+
+void dor_end();
+//libera espacio de los sprites de la puerta
+
+int dor_col(object_t* o,int x,int y);
+//registra la colision de un objeto con la puerta
+
+void dor_opn();
+//se abre la puerta
+
+void dor_drw();
+//dibujo de la puerta
+
 
