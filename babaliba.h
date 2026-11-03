@@ -48,9 +48,9 @@
 #define SKELETON 1
 #define SPIDER 2
 
-#define SOLPOM 0 //30 //probabilidades de movimiento
-#define SKEPOM 0 //40
-#define SPDPOM 0 //60
+#define SOLPOM 30 //30 //probabilidades de movimiento
+#define SKEPOM 40 //40
+#define SPDPOM 60 //60
 
 #define SWORD 0 //tipos de items (cada uno en el orden que mata al enemigo)
 #define CROSS 1

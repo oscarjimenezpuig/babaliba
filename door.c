@@ -3,7 +3,7 @@
 #define DOPX 3
 #define DOPY 9
 #define DOX (6*SPRDIM)
-#define DOY (2*SPRDIM)
+#define DOY (1*SPRDIM)
 
 static sprite_t sdoor[DOORS];
 static palette_t pdoor;
@@ -55,10 +55,12 @@ int dor_col(object_t* obj,int x,int y) {
 }
 
 void dor_opn() {
-    for(uchar k=0;k<DOORS;k++) {
-        spr_era(sdoor[k],DOX+k*SPRDIM,DOY,PIXDIM);
-    }
+    if(close) {
+        for(uchar k=0;k<DOORS;k++) {
+            spr_era(sdoor[k],DOX+k*SPRDIM,DOY,PIXDIM);
+        }
     close=0;
+    }
 }
 
 void dor_drw() {

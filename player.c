@@ -254,10 +254,11 @@ static int iskey(object_t* o) {
 }
 
 int ply_opn() {
-    int pk=arr_fnd(player.ply.it,player.ply.its,iskey);
-    if(pk<player.ply.its) {
-        arr_era(player.ply.it,player.ply.its,pk);
+    int pos=arr_fnd(player.ply.it,player.ply.its,iskey);
+    if(arr_is_fnd(pos,player.ply.its)) {
+        player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
         dor_opn();
+        ply_inv_drw();
         return 1;
     }
     return 0;
