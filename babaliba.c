@@ -35,6 +35,7 @@ int main() {
         ens_act(player.ply.px,player.ply.py);
         dor_drw();
         ply_drw();
+        ply_coi();
         ens_drw(player.ply.px,player.ply.py);
         scr_fls();
         pause(0.01);

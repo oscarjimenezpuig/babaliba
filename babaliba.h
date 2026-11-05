@@ -56,6 +56,8 @@
 #define CROSS 1
 #define DDT 2
 #define KEY 3 //no mata enemigo, hay solo una y abre la puerta
+#define COIN 4 //las monedas que dan la victoria en el juego
+#define LIFE 5 //icono de la vida extra, en algun lugar del juego
 
 #define SWRS ((MAPW*MAPH)/3) //cantidad de armas disponibles
 #define CRSS SWRS
@@ -65,6 +67,8 @@
 #define SPRMDIM (PIXDIM*8)
 
 #define DOORS 4 //numero de puertas
+
+#define COINS 4 //numero de monedas que hay que recoger para ganar
 
 // Tipos
 
@@ -164,6 +168,10 @@ extern uchar quit; //bandera de finalizar
 
 extern object_t door[]; //guarda la puerta
 
+extern object_t coin[COINS]; //guarda las monedas
+
+extern object_t life; //vida extra
+
 // Funciones
 
 //decoration.c
@@ -236,6 +244,9 @@ int ply_col(object_t* o);
 
 int ply_opn();
 //jugador intenta abrir la puerta
+
+int ply_coi();
+//se comprueba si el jugador ha obtenido monedas
 
 void ply_drw();
 //dibuja el jugador

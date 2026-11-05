@@ -4,10 +4,13 @@ object_t player;
 
 uchar quit=0;
 
+
 #define SPRPLY 1
 
 static sprite_t sprply[SPRPLY];
 static sprite_t sblank;
+
+static uchar coins=0;
 
 static void ply_spr() {
     char* data[]={      "  3333",
@@ -75,6 +78,18 @@ static void ply_liv_drw() {
     }
 }
 
+static void ply_coi_drw() {
+    //dibuja el marcador de monedas
+    const int Y=0;
+    const int X=SCRW-SPRDIM*COINS;
+    ply_era_mrk(X,Y,COINS);
+    int x=X;
+    for(uchar k=0;k<coins;k++) {
+       spr_drw(coin[0].spr,coin[0].pal,x,Y,PIXMDIM);
+       x+=SPRDIM;
+    }
+}
+
 static void reset_ene(uchar px,uchar py) {
     //cuenta los enemigos activos
     room_t* r=&(map[px][py]);
@@ -128,6 +143,7 @@ static void drw_act_rom() {
     room_dec_drw(player.ply.px,player.ply.py);
     ens_drw(player.ply.px,player.ply.py);
     ply_inv_drw();
+    ply_coi_drw();
     scr_fls();
 }
 
@@ -232,6 +248,10 @@ int ply_col(object_t* o) {
             }
         }
         return 1;
+    } else if(o->typ==ITEM && o->ite.cls==LIFE) {
+        room_obj_era(player.ply.px,player.ply.py,o);
+        player.ply.liv++;
+        ply_liv_drw();
     } else if(o->typ==ITEM && player.ply.bnt==0) {
         int ox=o->x;
         int oy=o->y;
@@ -260,6 +280,28 @@ int ply_opn() {
         dor_opn();
         ply_inv_drw();
         return 1;
+    }
+    return 0;
+}
+
+static int iscoi(object_t* o) {
+    return (o->typ==ITEM && o->ite.cls==COIN);
+}
+
+int ply_coi() {
+    const int XMIN=10*SPRDIM;
+    const int XMAX=14*SPRDIM;
+    const int YMIN=11*SPRDIM;
+    const int YMAX=12*SPRDIM;
+    if(player.ply.px==0 && player.ply.py==0 && player.x>=XMIN && player.x<=XMAX && player.y>=YMIN && player.y<=YMAX) {
+        int pos=arr_fnd(player.ply.it,player.ply.its,iscoi);
+        if(arr_is_fnd(pos,player.ply.its)) {
+            player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
+            coins++;
+            ply_inv_drw();
+            ply_coi_drw();
+            return 1;
+        }
     }
     return 0;
 }
