@@ -80,7 +80,7 @@ static void ply_liv_drw() {
 
 static void ply_coi_drw() {
     //dibuja el marcador de monedas
-    const int Y=0;
+    const int Y=2;
     const int X=SCRW-SPRDIM*COINS;
     ply_era_mrk(X,Y,COINS);
     int x=X;
@@ -88,6 +88,17 @@ static void ply_coi_drw() {
        spr_drw(coin[0].spr,coin[0].pal,x,Y,PIXMDIM);
        x+=SPRDIM;
     }
+}
+
+static void ply_scr_drw() {
+    //dibuja la puntuacion
+    const int Y=2;
+    const int X=0;
+    ply_era_mrk(X,0,5);
+    char str[]="00000";
+    sprintf(str,"%05i",player.ply.scr);
+    int x=X;
+    txt_drw(str,col_new(200,10,10),&x,Y,PIXMDIM);
 }
 
 static void reset_ene(uchar px,uchar py) {
@@ -144,6 +155,7 @@ static void drw_act_rom() {
     ens_drw(player.ply.px,player.ply.py);
     ply_inv_drw();
     ply_coi_drw();
+    ply_scr_drw();
     scr_fls();
 }
 
@@ -225,6 +237,7 @@ static int ply_use_weap(object_t* enemy) {
 }
 
 int ply_col(object_t* o) {
+    static uchar keyget=0;
     if(o->typ==ENEMY) {
         if(ply_use_weap(o)) {
             //muerte de enemigo
@@ -233,19 +246,12 @@ int ply_col(object_t* o) {
             int oy=o->y;
             spr_era(o->spr,ox,oy,PIXDIM);
             room_obj_era(player.ply.px,player.ply.py,o);
+            spr_era(o->spr,ox,oy,PIXDIM);
             dea_new(ox,oy);
+            ply_scr((o->ene.cls==SOLDIER)?SCDISOL:(o->ene.cls==SKELETON)?SCDISKL:SCDISPI);
         } else {
             //muerte jugador
-            spr_era(player.spr,player.x,player.y,PIXDIM);
-            pause(1);
-            player.ply.liv-=1;
-            if(player.ply.liv==0) {
-                quit=1;
-            } else {
-                room_obj_era(player.ply.px,player.ply.py,&player);
-                room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
-                drw_act_rom();
-            }
+            ply_die();
         }
         return 1;
     } else if(o->typ==ITEM && o->ite.cls==LIFE) {
@@ -265,6 +271,10 @@ int ply_col(object_t* o) {
         }
         player.ply.its=arr_psh(o,player.ply.it,player.ply.its);
         ply_inv_drw();
+        if(o->ite.cls==KEY && keyget==0) {
+            keyget=1;
+            ply_scr(SCGTKEY);
+        }
     }
     return 0;
 } 
@@ -278,6 +288,7 @@ int ply_opn() {
     if(arr_is_fnd(pos,player.ply.its)) {
         player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
         dor_opn();
+        ply_scr(SCOPDOR);
         ply_inv_drw();
         return 1;
     }
@@ -298,6 +309,7 @@ int ply_coi() {
         if(arr_is_fnd(pos,player.ply.its)) {
             player.ply.its=arr_era(player.ply.it,player.ply.its,pos);
             coins++;
+            ply_scr(coins*SCGETFR);
             ply_inv_drw();
             ply_coi_drw();
             return 1;
@@ -306,8 +318,36 @@ int ply_coi() {
     return 0;
 }
 
+int ply_die() {
+    spr_era(player.spr,player.x,player.y,PIXDIM);
+    player.ply.liv--;
+    dea_new(player.x,player.y);
+    while(dea_act()) {
+        scr_fls();
+        pause(0.01);
+    }
+    if(player.ply.liv==0) {
+        quit=1;
+    } else {
+        room_obj_era(player.ply.px,player.ply.py,&player);
+        room_obj_ins(PPXI,PPYI,PXI,PYI,&player);
+        drw_act_rom();
+    }
+    return !quit;
+}
+
+void ply_scr(int inc) {
+    player.ply.scr+=inc;
+    ply_scr_drw();
+}
+
 void ply_drw() {
+    static uchar init=1;
     obj_drw(player);
-    ply_liv_drw();
+    if(init) {
+        ply_liv_drw();
+        ply_scr_drw();
+        init=0;
+    }
 }
 

@@ -76,10 +76,12 @@ void dea_res() {
     }
 }
 
-void dea_act() {
+int dea_act() {
+    int actives=0;
     death_t* p=deaob;
     while(p!=deaob+DEAOBS) {
         if(p->off==0) {
+            actives++;
             if(p->ite<ITEMAX) {
                 p->ite++;
             } else {
@@ -94,6 +96,7 @@ void dea_act() {
         }
         p++;
     }
+    return actives;
 }
 
 void dea_end() {

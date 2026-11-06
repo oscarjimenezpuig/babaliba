@@ -70,6 +70,14 @@
 
 #define COINS 4 //numero de monedas que hay que recoger para ganar
 
+#define SCDISOL 100 //puntuacion por matar soldado
+#define SCDISKL 200 //puntuacion por matar esqueleto
+#define SCDISPI 300 //puntuacon por matar arana
+#define SCGTKEY 1000 //puntuacion por conseguir llave
+#define SCOPDOR 1000 //puntuacion por abrir puerta
+#define SCGETFR 2000 //puntuacion por primer saco (los demas se doblan, triplican...)
+
+
 // Tipos
 
 typedef unsigned char uchar;
@@ -248,6 +256,12 @@ int ply_opn();
 int ply_coi();
 //se comprueba si el jugador ha obtenido monedas
 
+int ply_die();
+//da la muerte del jugador y comprueba si le quedan o no vidas
+
+void ply_scr(int incr);
+//incremento de la puntuacion del jugador
+
 void ply_drw();
 //dibuja el jugador
 
@@ -289,8 +303,8 @@ void dea_new(int x,int y);
 void dea_res();
 //resetea todas las muertes poniendolas en off
 
-void dea_act();
-//actuacion de todos los dea que estan activos
+int dea_act();
+//actuacion de todos los dea que estan activos (devuelve el numero de activos)
 
 void dea_end();
 //finaliza todos los sprites de death
