@@ -156,6 +156,7 @@ static void drw_act_rom() {
     ply_inv_drw();
     ply_coi_drw();
     ply_scr_drw();
+    ply_liv_drw();
     scr_fls();
 }
 
@@ -255,6 +256,7 @@ int ply_col(object_t* o) {
         }
         return 1;
     } else if(o->typ==ITEM && o->ite.cls==LIFE) {
+        spr_era(o->spr,o->x,o->y,PIXDIM);
         room_obj_era(player.ply.px,player.ply.py,o);
         player.ply.liv++;
         ply_liv_drw();
@@ -318,6 +320,26 @@ int ply_coi() {
     return 0;
 }
 
+static void game_over() {
+    ushort bucles=30;
+    uchar pixdim=PIXDIM; //dimension del pixel
+    char* strg="GAME OVER"; //frase
+    char* p=strg;
+    while(*p!='\0') p++;
+    uchar len=p-strg;
+    ushort wdim=len*8*pixdim;
+    ushort hdim=8*pixdim;
+    int X=(SCRW-wdim)/2;
+    int Y=(SCRH-hdim)/2;
+    for(ushort k=0;k<bucles;k++) {
+        int x=X;
+        ushort col=(k%2==0)?255:0;
+        txt_drw(strg,col_new(col,col,col),&x,Y,pixdim);
+        scr_fls();
+        pause(0.5);
+    }
+}
+
 int ply_die() {
     spr_era(player.spr,player.x,player.y,PIXDIM);
     player.ply.liv--;
@@ -327,6 +349,7 @@ int ply_die() {
         pause(0.01);
     }
     if(player.ply.liv==0) {
+        game_over();
         quit=1;
     } else {
         room_obj_era(player.ply.px,player.ply.py,&player);

@@ -74,8 +74,8 @@
 #define SCDISKL 200 //puntuacion por matar esqueleto
 #define SCDISPI 300 //puntuacon por matar arana
 #define SCGTKEY 1000 //puntuacion por conseguir llave
-#define SCOPDOR 1000 //puntuacion por abrir puerta
-#define SCGETFR 2000 //puntuacion por primer saco (los demas se doblan, triplican...)
+#define SCOPDOR 2000 //puntuacion por abrir puerta
+#define SCGETFR 3000 //puntuacion por primer saco (los demas se doblan, triplican...)
 
 
 // Tipos
